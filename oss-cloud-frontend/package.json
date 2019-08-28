@@ -12,7 +12,7 @@
     "core-js": "^2.6.5",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
-    "vue-material": "^1.0.0-beta-11"
+    "vuetify": "^2.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
@@ -22,8 +22,11 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.12.0",
+    "sass": "^1.17.4",
     "sass-loader": "^7.3.1",
-    "vue-template-compiler": "^2.6.10"
+    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2"
   },
   "eslintConfig": {
     "root": true,
