@@ -1,0 +1,17 @@
+{
+  "name": "oss-cloud-backend",
+  "version": "1.0.0",
+  "description": "Backend npm",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serverless": "^1.50.1"
+  },
+  "devDependencies": {
+    "serverless-offline": "^5.10.1"
+  }
+}
