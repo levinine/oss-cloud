@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const access_token = process.env.GITHUB_ACCESS_TOKEN;
 const Octokit = require('@octokit/rest') // github api library
@@ -7,8 +7,6 @@ const octokit = new Octokit({
 })
 
 octokit.hook.error('request', async (error, options) => {
-  console.log("ERROR", error.status)
-
   throw error
 })
 
@@ -17,16 +15,13 @@ module.exports.hello = async event => {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
+        message: "Go Serverless v1.0! Your function executed successfully!",
+        input: event
       },
       null,
       2
-    ),
+    )
   };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
 
@@ -38,12 +33,11 @@ module.exports.hello = async event => {
 module.exports.getPulls = (event, context, callback) => {
   var body = JSON.parse(event.body);
   getForkedRepos(body.username) // get all repos of a user
-  .then(repos => getRepoDetails(repos))
-  .then(repos => getParentRepos(repos))
-  .then(repos => getUserPulls(body.username, repos))
-  .then(pulls => callback(null, pulls))
-  .catch((err) => callback(err))
-
+    .then(repos => getRepoDetails(repos))
+    .then(repos => getParentRepos(repos))
+    .then(repos => getUserPulls(body.username, repos))
+    .then(pulls => callback(null, pulls))
+    .catch((err) => callback(err, {status: 500, body: err.message}))
 };
 
 
@@ -62,7 +56,6 @@ var getForkedRepos = async(username) => {
   return octokit.search.repos({
     q: "user:" + username + "+fork:only"
   }).then(({data, headers, status}) => {
-    console.log(data);
     return data.items;
   })
 }
@@ -98,7 +91,6 @@ var getUserPulls = async (username, repos) => {
 
   await Promise.all(pullsPromises);
 
-  console.log(pulls);
   return pulls;
 }
 
