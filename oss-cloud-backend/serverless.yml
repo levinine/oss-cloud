@@ -1,12 +1,11 @@
 service: oss-cloud-backend
-app: myapp
-org: aleksaleks123
 
 provider:
   name: aws
   runtime: nodejs10.x
 
 plugins:
+  - serverless-dotenv-plugin # used to store github access token locally to keep it secret
   - serverless-offline
 
 functions:
@@ -16,3 +15,11 @@ functions:
       - http:
           path: hello
           method: get
+
+  getContributorPulls:
+    handler: handler.getPulls
+    events: # http event for testing, will probably change later
+      - http:
+          path: contributorPulls
+          method: post
+      
