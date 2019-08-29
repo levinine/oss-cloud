@@ -46,19 +46,6 @@ module.exports.getPulls = (event, context, callback) => {
 
 };
 
-// HELPER FUNCTIONS FOR GETPULLS
-
-// returns all repos of a single user
-var getRepos = async (username) => {
-  return octokit.repos.listForUser({
-    username: username,
-    type: 'all',
-  }).then(({data, headers, status}) => {
-    data = data ? (data instanceof Array ? data : [ data ]) : []
-    console.log("repos: ", data.length, " status", status)
-    return data;
-  })
-}
 
 // returns a single repo
 var getRepo = async (owner, repo) => {
@@ -80,46 +67,9 @@ var getForkedRepos = async(username) => {
   })
 }
 
-// returns a given page of pulls from a repo
-//var getPulls = async (owner, repo, page) => {
-//  return octokit.pulls.list({
-//    owner: owner,
-//    repo: repo,
-//    per_page: 100,
-//    page: page,
-//    state: "all"
-//  }).then(({data, headers, status}) => {
-//    data = data ? (data instanceof Array ? data : [ data ]) : []
-//    console.log("pulls: ", data.length, " status", status)
-//    return data;
-//  })
-//}
-//
-//// returns all pulls from a repo
-//var getAllPulls = async (owner, repo) => {
-//  let page = 1;
-//  let pulls = [];
-//  let pullNum = 0;
-//  do {
-//    let newPulls = await getPulls(owner, repo, page);
-//    pullNum = newPulls.length;
-//    page += 1
-//    pulls = pulls.concat(newPulls);
-//  } while (pullNum >= 100)
-//
-//  return pulls;
-//}
-
-// returns only forked repos from an array of repos
-var filterForked = (repos) => {
-  var forkedRepos = []
-  for (let repo of repos) if (repo.fork) forkedRepos.push(repo);  // filter out non-forked repos
-  return forkedRepos;
-}
 
 // makes a call to github api for each repo in array, returning a more detailed representation of the repo
 var getRepoDetails = async (repos) => {
-  //repos = filterForked(repos);
   const repoPromises = repos.map(async (repo) => {
     return getRepo(repo.owner.login, repo.name)
   })
@@ -141,9 +91,6 @@ var getParentRepos = async (repos) => {
 var getUserPulls = async (username, repos) => {
   let pulls = [];
   const pullsPromises = repos.map(async (repo) => {
-    //let repoPulls = await getAllPulls(repo.owner.login, repo.name);
-    //console.log(repoPulls.length)
-    //repoPulls = repoPulls.filter(pull => pull.user.login == username);
     let repoPulls = await searchUserPulls(username, repo);
     pulls = pulls.concat(repoPulls);
     return repoPulls;
