@@ -1,0 +1,16 @@
+service: oss-cloud-backend
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+
+plugins:
+  - serverless-offline
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
