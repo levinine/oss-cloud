@@ -37,7 +37,7 @@ module.exports.hello = async event => {
 // }
 module.exports.getPulls = (event, context, callback) => {
   var body = JSON.parse(event.body);
-  getRepos(body.username) // get all repos of a user
+  getForkedRepos(body.username) // get all repos of a user
   .then(repos => getRepoDetails(repos))
   .then(repos => getParentRepos(repos))
   .then(repos => getUserPulls(body.username, repos))
@@ -71,35 +71,44 @@ var getRepo = async (owner, repo) => {
   })
 }
 
-// returns a given page of pulls from a repo
-var getPulls = async (owner, repo, page) => {
-  return octokit.pulls.list({
-    owner: owner,
-    repo: repo,
-    per_page: 100,
-    page: page,
-    state: "all"
+var getForkedRepos = async(username) => {
+  return octokit.search.repos({
+    q: "user:" + username + "+fork:only"
   }).then(({data, headers, status}) => {
-    data = data ? (data instanceof Array ? data : [ data ]) : []
-    console.log("pulls: ", data.length, " status", status)
-    return data;
+    console.log(data);
+    return data.items;
   })
 }
 
-// returns all pulls from a repo
-var getAllPulls = async (owner, repo) => {
-  let page = 1;
-  let pulls = [];
-  let pullNum = 0;
-  do {
-    let newPulls = await getPulls(owner, repo, page);
-    pullNum = newPulls.length;
-    page += 1
-    pulls = pulls.concat(newPulls);
-  } while (pullNum >= 100)
-
-  return pulls;
-}
+// returns a given page of pulls from a repo
+//var getPulls = async (owner, repo, page) => {
+//  return octokit.pulls.list({
+//    owner: owner,
+//    repo: repo,
+//    per_page: 100,
+//    page: page,
+//    state: "all"
+//  }).then(({data, headers, status}) => {
+//    data = data ? (data instanceof Array ? data : [ data ]) : []
+//    console.log("pulls: ", data.length, " status", status)
+//    return data;
+//  })
+//}
+//
+//// returns all pulls from a repo
+//var getAllPulls = async (owner, repo) => {
+//  let page = 1;
+//  let pulls = [];
+//  let pullNum = 0;
+//  do {
+//    let newPulls = await getPulls(owner, repo, page);
+//    pullNum = newPulls.length;
+//    page += 1
+//    pulls = pulls.concat(newPulls);
+//  } while (pullNum >= 100)
+//
+//  return pulls;
+//}
 
 // returns only forked repos from an array of repos
 var filterForked = (repos) => {
@@ -110,7 +119,7 @@ var filterForked = (repos) => {
 
 // makes a call to github api for each repo in array, returning a more detailed representation of the repo
 var getRepoDetails = async (repos) => {
-  repos = filterForked(repos);
+  //repos = filterForked(repos);
   const repoPromises = repos.map(async (repo) => {
     return getRepo(repo.owner.login, repo.name)
   })
@@ -146,6 +155,7 @@ var getUserPulls = async (username, repos) => {
   return pulls;
 }
 
+// returns pulls from a repo where given user is the author
 var searchUserPulls = async(username, repo) => {
   console.log("searching pull requests: ", username, repo.name)
   return octokit.search.issuesAndPullRequests({
