@@ -21,3 +21,6 @@ yarn-error.log*
 jspm_packages
 # Serverless directories
 .serverless
+
+#database
+.dynamodb
