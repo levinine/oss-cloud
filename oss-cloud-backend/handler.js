@@ -30,6 +30,7 @@ module.exports.getPulls = (event, context, callback) => {
     .then(repos => getPullsHandler.getUserPulls(body.username, repos))
     .then(pulls => callback(null, pulls))
     .catch(err => {
+      console.log("error in getPulls handler: ", err);
       let response = {
         statusCode: err.status,
         body: JSON.stringify({

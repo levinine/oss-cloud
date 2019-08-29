@@ -47,7 +47,7 @@ module.exports.getParentRepos = async (repos) => {
 
 }
 
-// retrieves pulls for given user for each repo in given array
+// retrieves pull requests for given user for each repo in given array
 module.exports.getUserPulls = async (username, repos) => {
   let pulls = [];
   const pullsPromises = repos.map(async (repo) => {
@@ -58,16 +58,25 @@ module.exports.getUserPulls = async (username, repos) => {
 
   await Promise.all(pullsPromises);
 
+  console.log("Retrieved", pulls.length, "for user", username)
   return pulls;
 }
 
-// returns pulls from a repo where given user is the author
+// returns pull requests from a repo where given user is the author
 searchUserPulls = async(username, repo) => {
   console.log("searching pull requests: ", username, repo.name)
-  return octokit.search.issuesAndPullRequests({
-    q: "repo:" + repo.owner.login + "/" + repo.name + "+author:" + username + "+is:pr",
-    per_page: 100
-  }).then(({data, headers, status}) => {
-    return data.items;
-  })
+  var pulls = []
+  let pullNum = 0;
+  do {
+    await octokit.search.issuesAndPullRequests({
+      q: "repo:" + repo.owner.login + "/" + repo.name + "+author:" + username + "+is:pr",
+      per_page: 100
+    }).then(({data, headers, status}) => {
+        pulls = pulls.concat(data.items);
+        pullNum = data.items.length;
+    });
+    
+  } while (pullNum >= 100);
+
+  return pulls;
 }

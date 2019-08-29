@@ -19,6 +19,7 @@ functions:
   getContributorPulls:
     handler: handler.getPulls
     events: # http event for testing, will probably change later
+            # TODO - add scheduling
       - http:
           path: contributorPulls
           method: post
