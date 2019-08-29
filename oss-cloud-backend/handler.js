@@ -2,6 +2,7 @@
 
 var getPullsHandler = require('./getPullsHandler.js')
 
+
 module.exports.hello = async event => {
   return {
     statusCode: 200,
@@ -22,22 +23,49 @@ module.exports.hello = async event => {
 // {
 //    username: string  
 // }
-module.exports.getPulls = (event, context, callback) => {
-  var body = JSON.parse(event.body);
-  getPullsHandler.getForkedRepos(body.username) // get all repos of a user
-    .then(repos => getPullsHandler.getRepoDetails(repos))
-    .then(repos => getPullsHandler.getParentRepos(repos))
-    .then(repos => getPullsHandler.getUserPulls(body.username, repos))
-    .then(pulls => callback(null, pulls))
-    .catch(err => {
-      console.log("error in getPulls handler: ", err);
-      let response = {
-        statusCode: err.status,
-        body: JSON.stringify({
-          message: err.message
-        })
-      }
-      callback(null, response);
-    })
+module.exports.getPullRequests = async (event, context, callback) => {
+  let response;
+  // check if request is valid
+  try {
+    var body = JSON.parse(event.body);
+    body.username;
+  } catch {
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({message: 'Invalid JSON format'})
+    };
+    return response;
+  }
+
+  if (!body.username) {
+    console.log ('Property "username" missing from request body')
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({message: 'Property "username" missing from request body'})
+    };
+    return response;
+  }
+  // getting pull requests
+  try {
+    const repos = await getPullsHandler.getForkedRepos(body.username);
+    const reposDetailed = await getPullsHandler.getRepoDetails(repos);
+    const parentRepos = await getPullsHandler.getParentRepos(reposDetailed)
+    const pullRequests = await getPullsHandler.getUserPulls(body.username, parentRepos);
+    response = {
+      statusCode: 200,
+      body: JSON.stringify(pullRequests)
+    }
+
+  } catch (error) {
+    console.log("error in getPullRequests handler: ", error);
+    response = {
+      statusCode: error.status,
+      body: JSON.stringify({
+        message: error.message
+      })
+    }
+  } finally {
+    return response;
+  }
 };
 

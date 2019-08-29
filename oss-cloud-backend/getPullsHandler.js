@@ -4,9 +4,6 @@ const Octokit = require('@octokit/rest') // github api library
 const octokit = new Octokit({
   auth: access_token,
 })
-octokit.hook.error('request', async (error, options) => {
-  throw error
-})
 
 // returns a single repo
 var getRepo = async (owner, repo) => {
@@ -30,7 +27,7 @@ module.exports.getForkedRepos = async(username) => {
 
 // makes a call to github api for each repo in array, returning a more detailed representation of the repo
 module.exports.getRepoDetails = async (repos) => {
-  const repoPromises = repos.map(async (repo) => {
+  const repoPromises = repos.map((repo) => {
     return getRepo(repo.owner.login, repo.name)
   })
 
