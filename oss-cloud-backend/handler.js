@@ -13,3 +13,18 @@ module.exports.hello = async event => {
     )
   };
 };
+
+module.exports.addContributor = async (event, context, callback) => {
+  console.log(event.body);
+  return {
+    statusCode: 200,
+    body: JSON.stringify(
+      {
+        message: "Go Serverless v1.0! Your function executed successfully!",
+        input: event
+      },
+      null,
+      2
+    )
+  };
+};

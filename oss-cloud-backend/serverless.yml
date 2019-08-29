@@ -44,3 +44,9 @@ functions:
       - http:
           path: hello
           method: get
+  addContributor:
+    handler: handler.addContributor
+    events:
+      - http:
+          path: addContributor
+          method: post
