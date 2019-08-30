@@ -4,6 +4,18 @@ const octokit = new Octokit({
   auth: access_token
 });
 
+// checks if username exists on GitHub
+// params: username
+// return: Promise bool if
+module.exports.checkUsername = async username => {
+  return octokit.search
+    .users({
+      q: `user:${username}`
+    })
+    .then(() => true)
+    .catch(() => false);
+};
+
 // returns a single repo
 var getRepo = async (owner, repo) => {
   return octokit.repos

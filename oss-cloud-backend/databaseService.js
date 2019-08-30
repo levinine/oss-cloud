@@ -1,7 +1,8 @@
 var docClient = require("serverless-dynamodb-client").doc;
 
+// checks if username is already in use in database
 // params: username
-// return: [error, result]
+// return: Promise bool
 module.exports.checkUsername = username => {
   var params = {
     TableName: "contributors",
@@ -9,14 +10,36 @@ module.exports.checkUsername = username => {
       username: username
     }
   };
-  return docClient.get(params, function(err, data) {
-    if (err) {
-      console.log(err);
-      return [err, true];
-    } else {
-      if (Object.keys(data).length === 0) {
-        return [null, false];
-      } else return [null, true];
-    }
+  return new Promise((resolve, reject) => {
+    let retval;
+    docClient.get(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        if (Object.keys(data).length === 0) {
+          retval = false;
+        } else retval = true;
+        resolve(retval);
+      }
+    });
+  });
+};
+
+// saves contributor object in database
+// params: contributor
+module.exports.addContributor = contributor => {
+  var params = {
+    TableName: "contributors",
+    Item: contributor
+  };
+  return new Promise((resolve, reject) => {
+    let retval;
+    docClient.put(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
   });
 };

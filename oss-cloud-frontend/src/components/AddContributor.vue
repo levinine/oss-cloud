@@ -17,6 +17,7 @@
                   required
                   v-model="contributor.username"
                   :rules="notEmptyRule"
+                  @input="showAlert=false"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -25,6 +26,7 @@
                   required
                   v-model="contributor.firstName"
                   :rules="notEmptyRule"
+                  @input="showAlert=false"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -33,8 +35,15 @@
                   required
                   v-model="contributor.lastName"
                   :rules="notEmptyRule"
+                  @input="showAlert=false"
                 ></v-text-field>
               </v-col>
+              <v-alert
+                transition="scale-transition"
+                v-model="showAlert"
+                :type="alertType"
+                :alertMessage="alertMessage"
+              >{{alertMessage}}</v-alert>
             </v-row>
           </v-container>
         </v-card-text>
@@ -54,7 +63,10 @@ import axios from "axios";
 export default {
   data() {
     return {
+      showAlert: false,
+      alertMessage: "",
       dialog: false,
+      alertType: "",
       contributor: {
         username: "",
         firstName: "",
@@ -69,7 +81,17 @@ export default {
         method: "post",
         url: "http://localhost:3000/addContributor",
         data: this.contributor
-      }).then(response => console.log(response));
+      }).then(response => {
+        if (response.data.success) {
+          this.alertMessage = response.data.message;
+          this.alertType = "success";
+          this.showAlert = true;
+        } else {
+          this.alertMessage = response.data.message;
+          this.alertType = "error";
+          this.showAlert = true;
+        }
+      });
     }
   },
   watch: {
