@@ -66,7 +66,7 @@ export default {
       showAlert: false,
       alertMessage: "",
       dialog: false,
-      alertType: "",
+      alertType: "success",
       contributor: {
         username: "",
         firstName: "",
@@ -101,3 +101,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+v-dialog {
+  max-width: 600px;
+}
+</style>

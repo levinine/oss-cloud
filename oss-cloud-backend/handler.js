@@ -34,12 +34,13 @@ module.exports.addContributor = async (event, context, callback) => {
     body.firstName;
     body.lastName;
     if (Object.keys(body).length !== 3) {
-      throw error;
+      throw "Invalid number of attributes in JSON";
     }
-  } catch {
+  } catch (err) {
+    console.log(err);
     response = {
-      statusCode: 200,
-      body: JSON.stringify({ message: "Invalid JSON format" })
+      statusCode: 400,
+      body: JSON.stringify({ message: err.message })
     };
     return response;
   }
@@ -79,6 +80,7 @@ module.exports.addContributor = async (event, context, callback) => {
       })
     };
   } catch (err) {
+    console.log(err);
     return {
       statusCode: 500,
       body: JSON.stringify({
