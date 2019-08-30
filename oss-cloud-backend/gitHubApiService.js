@@ -4,9 +4,6 @@ const Octokit = require('@octokit/rest') // github api library
 const octokit = new Octokit({
   auth: access_token,
 })
-octokit.hook.error('request', async (error, options) => {
-  throw error
-})
 
 // returns a single repo
 var getRepo = async (owner, repo) => {
@@ -30,7 +27,7 @@ module.exports.getForkedRepos = async(username) => {
 
 // makes a call to github api for each repo in array, returning a more detailed representation of the repo
 module.exports.getRepoDetails = async (repos) => {
-  const repoPromises = repos.map(async (repo) => {
+  const repoPromises = repos.map((repo) => {
     return getRepo(repo.owner.login, repo.name)
   })
 
@@ -39,7 +36,7 @@ module.exports.getRepoDetails = async (repos) => {
 
 // returns the parent repos from an array of forked repos (details needed)
 module.exports.getParentRepos = async (repos) => {
-  const repoPromises = repos.map(async (repo) => {
+  const repoPromises = repos.map((repo) => {
     return getRepo(repo.parent.owner.login, repo.parent.name);
   })
 
@@ -48,35 +45,35 @@ module.exports.getParentRepos = async (repos) => {
 }
 
 // retrieves pull requests for given user for each repo in given array
-module.exports.getUserPulls = async (username, repos) => {
-  let pulls = [];
-  const pullsPromises = repos.map(async (repo) => {
-    let repoPulls = await searchUserPulls(username, repo);
-    pulls = pulls.concat(repoPulls);
-    return repoPulls;
+module.exports.getUserPullRequests = async (username, repos) => {
+  let pullRequests = [];
+  const pullRequestPromises = repos.map(async (repo) => {
+    let repoPullRequests = await searchUserPullRequests(username, repo);
+    pullRequests = pullRequests.concat(repoPullRequests);
+    return repoPullRequests;
   })
 
-  await Promise.all(pullsPromises);
+  await Promise.all(pullRequestPromises);
 
-  console.log("Retrieved", pulls.length, "for user", username)
-  return pulls;
+  console.log("Retrieved", pullRequests.length, "for user", username)
+  return pullRequests;
 }
 
 // returns pull requests from a repo where given user is the author
-searchUserPulls = async(username, repo) => {
+searchUserPullRequests = async(username, repo) => {
   console.log("searching pull requests: ", username, repo.name)
-  var pulls = []
-  let pullNum = 0;
+  var pullRequests = []
+  let pullRequestNum = 0;
   do {
     await octokit.search.issuesAndPullRequests({
       q: "repo:" + repo.owner.login + "/" + repo.name + "+author:" + username + "+is:pr",
       per_page: 100
     }).then(({data, headers, status}) => {
-        pulls = pulls.concat(data.items);
-        pullNum = data.items.length;
+      pullRequests = pullRequests.concat(data.items);
+      pullRequestNum = data.items.length;
     });
     
-  } while (pullNum >= 100);
+  } while (pullRequestNum >= 100);
 
-  return pulls;
+  return pullRequests;
 }

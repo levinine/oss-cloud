@@ -5,7 +5,7 @@ provider:
   runtime: nodejs10.x
 
 plugins:
-  - serverless-dotenv-plugin # used to store github access token locally to keep it secret
+  - serverless-dotenv-plugin          # used to store github access token locally to keep it secret
   - serverless-dynamodb-local
   - serverless-offline
 
@@ -47,7 +47,7 @@ functions:
           method: get
 
   getContributorPulls:
-    handler: handler.getPulls
+    handler: handler.getPullRequests
     events: # http event for testing, will probably change later
             # TODO - add scheduling
       - http:

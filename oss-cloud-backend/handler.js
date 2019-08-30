@@ -1,6 +1,8 @@
 "use strict";
 
-var getPullsHandler = require('./getPullsHandler.js')
+var gitHubApiService = require('./gitHubApiService.js')
+
+// TODO rename "pulls" to "pull requests"
 
 module.exports.hello = async event => {
   return {
@@ -22,22 +24,49 @@ module.exports.hello = async event => {
 // {
 //    username: string  
 // }
-module.exports.getPulls = (event, context, callback) => {
-  var body = JSON.parse(event.body);
-  getPullsHandler.getForkedRepos(body.username) // get all repos of a user
-    .then(repos => getPullsHandler.getRepoDetails(repos))
-    .then(repos => getPullsHandler.getParentRepos(repos))
-    .then(repos => getPullsHandler.getUserPulls(body.username, repos))
-    .then(pulls => callback(null, pulls))
-    .catch(err => {
-      console.log("error in getPulls handler: ", err);
-      let response = {
-        statusCode: err.status,
-        body: JSON.stringify({
-          message: err.message
-        })
-      }
-      callback(null, response);
-    })
+module.exports.getPullRequests = async (event, context, callback) => {
+  let response;
+  // check if request is valid
+  try {
+    var body = JSON.parse(event.body);
+    body.username;
+  } catch {
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({message: 'Invalid JSON format'})
+    };
+    return response;
+  }
+
+  if (!body.username) {
+    console.log ('Property "username" missing from request body')
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({message: 'Property "username" missing from request body'})
+    };
+    return response;
+  }
+  // getting pull requests
+  try {
+    const repos = await gitHubApiService.getForkedRepos(body.username);
+    const reposDetailed = await gitHubApiService.getRepoDetails(repos);
+    const parentRepos = await gitHubApiService.getParentRepos(reposDetailed)
+    const pullRequests = await gitHubApiService.getUserPullRequests(body.username, parentRepos);
+    response = {
+      statusCode: 200,
+      body: JSON.stringify(pullRequests)
+    }
+
+  } catch (error) {
+    console.log("error in getPullRequests handler: ", error);
+    response = {
+      statusCode: error.status,
+      body: JSON.stringify({
+        message: error.message
+      })
+    }
+  } finally {
+    return response;
+  }
 };
 
