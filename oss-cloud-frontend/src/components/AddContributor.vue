@@ -101,8 +101,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-v-dialog {
-  max-width: 600px;
-}
-</style>

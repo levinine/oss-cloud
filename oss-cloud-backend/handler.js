@@ -48,7 +48,7 @@ module.exports.addContributor = async (event, context, callback) => {
   try {
     if (await databaseService.checkUsername(body.username)) {
       return {
-        statusCode: 200,
+        statusCode: 409,
         body: JSON.stringify({
           message: "Username is already registered on this platform",
           success: false
@@ -57,7 +57,7 @@ module.exports.addContributor = async (event, context, callback) => {
     }
     if (!(await gitHubApiService.checkUsername(body.username))) {
       return {
-        statusCode: 200,
+        statusCode: 404,
         body: JSON.stringify({
           message: "Username does not exist on GitHub",
           success: false
@@ -73,7 +73,7 @@ module.exports.addContributor = async (event, context, callback) => {
     });
     // TODO: call scheduler
     return {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify({
         message: "Successfully added contributor",
         success: true
