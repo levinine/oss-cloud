@@ -1,7 +1,8 @@
 "use strict";
 
-var getPullsHandler = require('./getPullsHandler.js')
+var gitHubApiService = require('./gitHubApiService.js')
 
+// TODO rename "pulls" to "pull requests"
 
 module.exports.hello = async event => {
   return {
@@ -47,10 +48,10 @@ module.exports.getPullRequests = async (event, context, callback) => {
   }
   // getting pull requests
   try {
-    const repos = await getPullsHandler.getForkedRepos(body.username);
-    const reposDetailed = await getPullsHandler.getRepoDetails(repos);
-    const parentRepos = await getPullsHandler.getParentRepos(reposDetailed)
-    const pullRequests = await getPullsHandler.getUserPulls(body.username, parentRepos);
+    const repos = await gitHubApiService.getForkedRepos(body.username);
+    const reposDetailed = await gitHubApiService.getRepoDetails(repos);
+    const parentRepos = await gitHubApiService.getParentRepos(reposDetailed)
+    const pullRequests = await gitHubApiService.getUserPullRequests(body.username, parentRepos);
     response = {
       statusCode: 200,
       body: JSON.stringify(pullRequests)
