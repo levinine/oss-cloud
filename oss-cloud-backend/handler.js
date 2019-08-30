@@ -1,6 +1,7 @@
 "use strict";
 
 var getPullsHandler = require("./getPullsHandler.js");
+var databaseService = require("./databaseService.js");
 
 module.exports.hello = async event => {
   return {
@@ -17,18 +18,31 @@ module.exports.hello = async event => {
 };
 
 module.exports.addContributor = async (event, context, callback) => {
-  console.log(event.body);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: "Go Serverless v1.0! Your function executed successfully!",
-        input: event
-      },
-      null,
-      2
-    )
-  };
+  const [err, usernameExists] = await databaseService.checkUsername(
+    event.body.username
+  );
+  if (err) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: err.message,
+        success: false
+      })
+    };
+  }
+
+  if (usernameExists) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Username is already registered on this platform",
+        success: false
+      })
+    };
+  }
+
+  // check git
+  // put in base
 };
 
 // returns all pull requests from parents of all forked repos for a single github user
