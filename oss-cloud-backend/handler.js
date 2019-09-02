@@ -20,7 +20,6 @@ module.exports.hello = async event => {
 module.exports.getAllContributors = async (event, context, callback) => {
   try {
     const contributors = await databaseService.getAllContributors();
-    console.log(contributors);
     return {
       statusCode: 200,
       body: JSON.stringify(contributors)
@@ -46,9 +45,10 @@ module.exports.getAllContributors = async (event, context, callback) => {
 // }
 module.exports.addContributor = async (event, context, callback) => {
   // check if request is valid
+  let body;
   try {
     // TODO create generic function for checking validity of a body
-    let body = JSON.parse(event.body);
+    body = JSON.parse(event.body);
     if (Object.keys(body).length !== 3) {
       throw "Invalid number of attributes in JSON";
     }
@@ -86,22 +86,7 @@ module.exports.addContributor = async (event, context, callback) => {
       lastName: body.lastName,
       link: "https://github.com/" + body.username,
       contributionCount: 0,
-      contributions: [
-        {
-          repo: "repo",
-          number: "number",
-          title: "title",
-          link: "link",
-          status: "status"
-        },
-        {
-          repo: "repo2",
-          number: "number2",
-          title: "title2",
-          link: "link2",
-          status: "status2"
-        }
-      ]
+      contributions: []
     });
     // TODO: call scheduler
     return {

@@ -46,9 +46,7 @@
 </template>
 
 <script>
-import axios from "axios";
-
-const getAllContributorsURL = "http://localhost:3000/contributors";
+import { loadContributorsAxios } from "./../axiosService.js";
 
 export default {
   data() {
@@ -81,10 +79,7 @@ export default {
   },
   methods: {
     loadContributors() {
-      axios({
-        method: "get",
-        url: getAllContributorsURL
-      }).then(response => {
+      loadContributorsAxios().then(response => {
         this.contributors = response.data;
       });
     }
