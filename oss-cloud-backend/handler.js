@@ -17,6 +17,25 @@ module.exports.hello = async event => {
   };
 };
 
+module.exports.getAllContributors = async (event, context, callback) => {
+  try {
+    const contributors = await databaseService.getAllContributors();
+    return {
+      statusCode: 200,
+      body: JSON.stringify(contributors)
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: err.message,
+        success: false
+      })
+    };
+  }
+};
+
 // add a contributor to database if he does not already exist and is registered on GitHub
 // POST expected json
 // {
@@ -26,9 +45,10 @@ module.exports.hello = async event => {
 // }
 module.exports.addContributor = async (event, context, callback) => {
   // check if request is valid
+  let body;
   try {
     // TODO create generic function for checking validity of a body
-    let body = JSON.parse(event.body);
+    body = JSON.parse(event.body);
     if (Object.keys(body).length !== 3) {
       throw "Invalid number of attributes in JSON";
     }
@@ -62,7 +82,8 @@ module.exports.addContributor = async (event, context, callback) => {
     }
     await databaseService.addContributor({
       username: body.username,
-      name: body.firstName + " " + body.lastName,
+      firstName: body.firstName,
+      lastName: body.lastName,
       link: "https://github.com/" + body.username,
       contributionCount: 0,
       contributions: []
@@ -99,8 +120,7 @@ module.exports.updatePullRequests = async (event, context, callback) => {
     response = {
       statusCode: 200,
       body: results.toString() + " contributors updated"
-    }
-
+    };
   } catch (error) {
     console.log("error in getPullRequests handler: ", error);
     response = {

@@ -1,11 +1,9 @@
-var dynamodb = require("serverless-dynamodb-client")
+var dynamodb = require("serverless-dynamodb-client");
 var docClient = dynamodb.doc;
 var rawClient = dynamodb.raw;
-var attr = require('dynamodb-data-types').AttributeValue;
+var attr = require("dynamodb-data-types").AttributeValue;
 
-
-
-module.exports.getContributor = (username) => {
+module.exports.getContributor = username => {
   const params = {
     TableName: "contributors",
     Key: {
@@ -14,51 +12,49 @@ module.exports.getContributor = (username) => {
   };
   return new Promise((resolve, reject) => {
     docClient.get(params, (error, data) => {
-        if (error) {
-            reject(error);
-        }
-        resolve(data);
+      if (error) {
+        reject(error);
+      }
+      resolve(data);
     });
-  })
-}
-
+  });
+};
 
 module.exports.updateContributorPullRequests = (username, pullRequests) => {
   const params = {
     TableName: "contributors",
     Key: {
-        username: username
+      username: username
     },
-    UpdateExpression: 'SET contributions = :prs',
+    UpdateExpression: "SET contributions = :prs",
     ExpressionAttributeValues: {
-        ':prs': pullRequests
+      ":prs": pullRequests
     },
-    ReturnValues: 'UPDATED_NEW'
-  }
+    ReturnValues: "UPDATED_NEW"
+  };
   return new Promise((resolve, reject) => {
     docClient.update(params, (error, data) => {
-        if (error) {
-          reject(error);
-        }
-        resolve(true);
-    })
-  })
-}
+      if (error) {
+        reject(error);
+      }
+      resolve(true);
+    });
+  });
+};
 
 module.exports.getAllContributors = () => {
-    const params = {
-        TableName: 'contributors',
-    };
-    return new Promise((resolve, reject) => {
-        rawClient.scan(params, (error, data) => {
-            if (error) {
-              reject(error)
-            }
-            resolve(data.Items.map((item) => attr.unwrap(item)))
-        })
-    })
-}
-
+  const params = {
+    TableName: "contributors"
+  };
+  return new Promise((resolve, reject) => {
+    rawClient.scan(params, (error, data) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(data.Items.map(item => attr.unwrap(item)));
+    });
+  });
+};
 
 module.exports.checkUsername = username => {
   var params = {
@@ -71,12 +67,12 @@ module.exports.checkUsername = username => {
     let retval;
     docClient.get(params, function(err, data) {
       if (err) {
-        reject(err)
+        reject(err);
       }
       if (Object.keys(data).length === 0) {
-        resolve(false)
+        resolve(false);
       }
-      resolve(true)
+      resolve(true);
     });
   });
 };

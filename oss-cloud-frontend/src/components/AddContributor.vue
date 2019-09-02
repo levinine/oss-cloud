@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { addContributorAxios } from "./../axiosService.js";
 
 export default {
   data() {
@@ -77,15 +77,12 @@ export default {
   },
   methods: {
     addContributor() {
-      axios({
-        method: "post",
-        url: "http://localhost:3000/addContributor",
-        data: this.contributor
-      }).then(response => {
+      addContributorAxios(this.contributor).then(response => {
         if (response.data.success) {
           this.alertMessage = response.data.message;
           this.alertType = "success";
           this.showAlert = true;
+          this.$root.$emit("addedContributorEvent");
         } else {
           this.alertMessage = response.data.message;
           this.alertType = "error";
