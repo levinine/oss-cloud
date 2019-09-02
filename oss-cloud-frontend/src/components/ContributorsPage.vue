@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import AddContributor from "./AddContributor.vue";
 import ContributorsTable from "./ContributorsTable.vue";
 

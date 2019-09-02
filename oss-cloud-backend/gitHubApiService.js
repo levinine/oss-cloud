@@ -32,7 +32,7 @@ var getRepo = async (owner, repo) => {
 module.exports.getForkedRepos = async username => {
   return octokit.search
     .repos({
-      q: "user:" + username + "+fork:only"
+      q: `user:${username}+fork:only`
     })
     .then(({ data, headers, status }) => {
       return data.items;
@@ -45,8 +45,8 @@ module.exports.getRepoDetails = async repos => {
     return getRepo(repo.owner.login, repo.name);
   });
 
-  return await Promise.all(repoPromises);
-};
+  return Promise.all(repoPromises);
+}
 
 // returns the parent repos from an array of forked repos (details needed)
 module.exports.getParentRepos = async repos => {
@@ -54,8 +54,9 @@ module.exports.getParentRepos = async repos => {
     return getRepo(repo.parent.owner.login, repo.parent.name);
   });
 
-  return await Promise.all(repoPromises);
-};
+  return Promise.all(repoPromises);
+
+}
 
 // retrieves pull requests for given user for each repo in given array
 module.exports.getUserPullRequests = async (username, repos) => {
@@ -78,22 +79,15 @@ searchUserPullRequests = async (username, repo) => {
   var pullRequests = [];
   let pullRequestNum = 0;
   do {
-    await octokit.search
-      .issuesAndPullRequests({
-        q:
-          "repo:" +
-          repo.owner.login +
-          "/" +
-          repo.name +
-          "+author:" +
-          username +
-          "+is:pr",
-        per_page: 100
-      })
-      .then(({ data, headers, status }) => {
-        pullRequests = pullRequests.concat(data.items);
-        pullRequestNum = data.items.length;
-      });
+    await octokit.search.issuesAndPullRequests({
+      q: `repo:${repo.owner.login}/${repo.name}+author:${username}+is:pr`,
+      per_page: 100,
+      page: pullRequestNum
+    }).then(({data, headers, status}) => {
+      pullRequests = pullRequests.concat(data.items);
+      pullRequestNum = data.items.length;
+    });
+    
   } while (pullRequestNum >= 100);
 
   return pullRequests;
