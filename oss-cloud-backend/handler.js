@@ -97,23 +97,45 @@ module.exports.addContributor = async (event, context, callback) => {
 //    username: string
 // }
 module.exports.updatePullRequests = async (event, context, callback) => {
-  let response;
+  let response
   try {
-    const results = await gitHubApiService.updatePullRequests();
+    const results = await gitHubApiService.updatePullRequests()
     response = {
       statusCode: 200,
       body: results.toString() + " contributors updated"
     }
 
   } catch (error) {
-    console.log("error in getPullRequests handler: ", error);
+    console.log("error in getPullRequests handler: ", error)
     response = {
-      statusCode: error.status,
+      statusCode: 500,
       body: JSON.stringify({
         message: error.message
       })
     };
   } finally {
-    return response;
+    return response
   }
 };
+
+
+module.exports.getContributions = async (event, context, callback) => {
+  let response
+  try {
+    const contributions = await databaseService.getAllContributions()
+    response = {
+      statusCode: 200,
+      body: JSON.stringify(contributions)
+    }
+  } catch (error) {
+    console.log("error in getContributions handler")
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: error.message
+      })
+    }
+  } finally {
+    return response
+  }
+}

@@ -59,4 +59,11 @@ functions:
       - http:
           path: updatePullRequests
           method: get
+
+  getContributions:
+    handler: handler.getContributions
+    events:
+      - http:
+          path: contributions
+          method: get
       

@@ -52,7 +52,6 @@ module.exports.getAllContributors = () => {
     return new Promise((resolve, reject) => {
         rawClient.scan(params, (error, data) => {
             if (error) reject(error)
-            console.log(data)
             resolve(data.Items.map((item) => attr.unwrap(item)))
         })
     })
@@ -99,3 +98,26 @@ module.exports.addContributor = contributor => {
     });
   });
 };
+
+
+module.exports.getAllContributions = () => {
+  const params = {
+    TableName: 'contributors',
+  };
+  return new Promise((resolve, reject) => {
+    rawClient.scan(params, (error, data) => {
+        if (error) reject(error)
+        resolve(extractContributions(data.Items.map((item) => attr.unwrap(item))))
+    })
+  })
+}
+
+// accepts a list of contributors and extracts a list of their contributions
+extractContributions = (contributorList) => {
+  let contributions = []
+  for (let contributor of contributorList) {
+    contributions = contributions.concat(contributor.contributions)
+  }
+  console.log(contributions)
+  return contributions
+}

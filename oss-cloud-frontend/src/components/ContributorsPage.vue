@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import axios from "axios";
+//import axios from "axios";
 import AddContributor from "./AddContributor.vue";
 
 export default {
