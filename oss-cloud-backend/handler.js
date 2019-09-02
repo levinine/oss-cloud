@@ -32,7 +32,7 @@ module.exports.getPullRequests = async (event, context, callback) => {
     body.username;
   } catch {
     response = {
-      statusCode: 500,
+      statusCode: 400,
       body: JSON.stringify({message: 'Invalid JSON format'})
     };
     return response;
@@ -41,7 +41,7 @@ module.exports.getPullRequests = async (event, context, callback) => {
   if (!body.username) {
     console.log ('Property "username" missing from request body')
     response = {
-      statusCode: 500,
+      statusCode: 400,
       body: JSON.stringify({message: 'Property "username" missing from request body'})
     };
     return response;

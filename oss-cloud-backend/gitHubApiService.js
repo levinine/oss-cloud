@@ -31,7 +31,7 @@ module.exports.getRepoDetails = async (repos) => {
     return getRepo(repo.owner.login, repo.name)
   })
 
-  return await Promise.all(repoPromises);
+  return Promise.all(repoPromises);
 }
 
 // returns the parent repos from an array of forked repos (details needed)
@@ -40,7 +40,7 @@ module.exports.getParentRepos = async (repos) => {
     return getRepo(repo.parent.owner.login, repo.parent.name);
   })
 
-  return await Promise.all(repoPromises);
+  return Promise.all(repoPromises);
 
 }
 
@@ -67,7 +67,8 @@ searchUserPullRequests = async(username, repo) => {
   do {
     await octokit.search.issuesAndPullRequests({
       q: "repo:" + repo.owner.login + "/" + repo.name + "+author:" + username + "+is:pr",
-      per_page: 100
+      per_page: 100,
+      page: pullRequestNum
     }).then(({data, headers, status}) => {
       pullRequests = pullRequests.concat(data.items);
       pullRequestNum = data.items.length;
