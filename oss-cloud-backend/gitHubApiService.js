@@ -56,8 +56,8 @@ const getParentRepos = async (repos) => {
     return getRepo(repo.parent.owner.login, repo.parent.name);
   });
 
-  return Promise.all(repoPromises);
-};
+  return Promise.all(repoPromises)
+}
 
 // retrieves pull requests for given user for each repo in given array
 const getUserPullRequests = async (username, repos) => {

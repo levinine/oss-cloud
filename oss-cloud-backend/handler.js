@@ -28,11 +28,7 @@ module.exports.addContributor = async (event, context, callback) => {
   // check if request is valid
   try {
     // TODO create generic function for checking validity of a body
-    var body = JSON.parse(event.body);
-    // check if keys exist
-    body.username;
-    body.firstName;
-    body.lastName;
+    let body = JSON.parse(event.body);
     if (Object.keys(body).length !== 3) {
       throw "Invalid number of attributes in JSON";
     }
@@ -108,7 +104,7 @@ module.exports.updatePullRequests = async (event, context, callback) => {
   } catch (error) {
     console.log("error in getPullRequests handler: ", error);
     response = {
-      statusCode: error.status,
+      statusCode: 500,
       body: JSON.stringify({
         message: error.message
       })
