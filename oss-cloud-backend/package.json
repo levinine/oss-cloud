@@ -14,8 +14,11 @@
     "serverless-dynamodb-client": "0.0.2"
   },
   "devDependencies": {
-    "serverless-dotenv-plugin": "^2.1.1",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "serverless": "^1.51.0",
+    "serverless-dotenv-plugin": "^2.1.1",
     "serverless-dynamodb-local": "^0.2.38",
     "serverless-offline": "^5.10.1"
   }

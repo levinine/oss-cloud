@@ -1,73 +1,70 @@
-var dynamodb = require("serverless-dynamodb-client")
-var docClient = dynamodb.doc;
-var rawClient = dynamodb.raw;
-var attr = require('dynamodb-data-types').AttributeValue;
+const dynamodb = require('serverless-dynamodb-client');
 
-
+const docClient = dynamodb.doc;
+const rawClient = dynamodb.raw;
+const attr = require('dynamodb-data-types').AttributeValue;
 
 module.exports.getContributor = (username) => {
   const params = {
-    TableName: "contributors",
+    TableName: 'contributors',
     Key: {
-      username: username
-    }
+      username,
+    },
   };
   return new Promise((resolve, reject) => {
     docClient.get(params, (error, data) => {
-        if (error) {
-            reject(error);
-        }
-        resolve(data);
+      if (error) {
+        reject(error);
+      }
+      resolve(data);
     });
-  })
-}
-
+  });
+};
 
 module.exports.updateContributorPullRequests = (username, pullRequests) => {
   const params = {
-    TableName: "contributors",
+    TableName: 'contributors',
     Key: {
-        username: username
+      username,
     },
     UpdateExpression: 'SET contributions = :prs',
     ExpressionAttributeValues: {
-        ':prs': pullRequests
+      ':prs': pullRequests,
     },
-    ReturnValues: 'UPDATED_NEW'
-  }
+    ReturnValues: 'UPDATED_NEW',
+  };
   return new Promise((resolve, reject) => {
-    docClient.update(params, (error, data) => {
-        if (error) {
-          reject(error);
-        }
-        resolve(true);
-    })
-  })
-}
+    docClient.update(params, (error) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(true);
+    });
+  });
+};
 
 module.exports.getAllContributors = () => {
-    const params = {
-        TableName: 'contributors',
-    };
-    return new Promise((resolve, reject) => {
-        rawClient.scan(params, (error, data) => {
-            if (error) reject(error)
-            resolve(data.Items.map((item) => attr.unwrap(item)))
-        })
-    })
-}
+  const params = {
+    TableName: 'contributors',
+  };
+  return new Promise((resolve, reject) => {
+    rawClient.scan(params, (error, data) => {
+      if (error) reject(error);
+      resolve(data.Items.map((item) => attr.unwrap(item)));
+    });
+  });
+};
 
-
-module.exports.checkUsername = username => {
-  var params = {
-    TableName: "contributors",
+module.exports.checkUsername = (username) => {
+  const params = {
+    TableName: 'contributors',
     Key: {
-      username: username
-    }
+      username,
+    },
   };
   return new Promise((resolve, reject) => {
     let retval;
-    docClient.get(params, function(err, data) {
+    docClient.get(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -82,14 +79,13 @@ module.exports.checkUsername = username => {
 
 // saves contributor object in database
 // params: contributor
-module.exports.addContributor = contributor => {
-  var params = {
-    TableName: "contributors",
-    Item: contributor
+module.exports.addContributor = (contributor) => {
+  const params = {
+    TableName: 'contributors',
+    Item: contributor,
   };
   return new Promise((resolve, reject) => {
-    let retval;
-    docClient.put(params, function(err, data) {
+    docClient.put(params, (err) => {
       if (err) {
         reject(err);
       } else {
@@ -99,6 +95,15 @@ module.exports.addContributor = contributor => {
   });
 };
 
+// accepts a list of contributors and extracts a list of their contributions
+const extractContributions = (contributorList) => {
+  let contributions = [];
+
+  contributorList.forEach((contributor) => {
+    contributions = contributions.concat(contributor.contributions);
+  });
+  return contributions;
+};
 
 module.exports.getAllContributions = () => {
   const params = {
@@ -106,18 +111,8 @@ module.exports.getAllContributions = () => {
   };
   return new Promise((resolve, reject) => {
     rawClient.scan(params, (error, data) => {
-        if (error) reject(error)
-        resolve(extractContributions(data.Items.map((item) => attr.unwrap(item))))
-    })
-  })
-}
-
-// accepts a list of contributors and extracts a list of their contributions
-extractContributions = (contributorList) => {
-  let contributions = []
-  for (let contributor of contributorList) {
-    contributions = contributions.concat(contributor.contributions)
-  }
-  console.log(contributions)
-  return contributions
-}
+      if (error) reject(error);
+      resolve(extractContributions(data.Items.map((item) => attr.unwrap(item))));
+    });
+  });
+};
