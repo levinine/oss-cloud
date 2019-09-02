@@ -11,15 +11,12 @@ module.exports.checkUsername = username => {
     }
   };
   return new Promise((resolve, reject) => {
-    let retval;
     docClient.get(params, function(err, data) {
       if (err) {
         reject(err);
       } else {
-        if (Object.keys(data).length === 0) {
-          retval = false;
-        } else retval = true;
-        resolve(retval);
+        if (Object.keys(data).length === 0) resolve(false);
+        resolve(true);
       }
     });
   });
@@ -33,7 +30,6 @@ module.exports.addContributor = contributor => {
     Item: contributor
   };
   return new Promise((resolve, reject) => {
-    let retval;
     docClient.put(params, function(err, data) {
       if (err) {
         reject(err);

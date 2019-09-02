@@ -100,12 +100,12 @@ module.exports.getPullRequests = async (event, context, callback) => {
   let response;
   // check if request is valid
   try {
-    var body = JSON.parse(event.body);
+    let body = JSON.parse(event.body);
     // check if username exists
     body.username;
   } catch {
     response = {
-      statusCode: 500,
+      statusCode: 400,
       body: JSON.stringify({ message: "Invalid JSON format" })
     };
     return response;
