@@ -122,7 +122,6 @@ const updateContributorPullRequests = async (username, pullRequests) => {
   const contributor = await databaseService.getContributor(username);
 
   const filteredPullRequests = filterPullRequestAttributes(pullRequests);
-  console.log('pull requests CCCCCCCCCCCCC', filteredPullRequests);
 
   const unitedPullRequests = unitePullRequests(
     filteredPullRequests,
@@ -142,7 +141,6 @@ const getContributorPullRequests = async (username) => {
   const reposDetailed = await getRepoDetails(repos);
   const parentRepos = await getParentRepos(reposDetailed);
   const pullRequests = await getUserPullRequests(username, parentRepos);
-  console.log('pull requests BBBBBBBBBBBB', pullRequests);
   return updateContributorPullRequests(username, pullRequests);
 };
 

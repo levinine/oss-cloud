@@ -13,6 +13,25 @@ module.exports.hello = async (event) => ({
   ),
 });
 
+module.exports.getAllContributors = async () => {
+  try {
+    const contributors = await databaseService.getAllContributors();
+    return {
+      statusCode: 200,
+      body: JSON.stringify(contributors),
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: err.message,
+        success: false,
+      }),
+    };
+  }
+};
+
 // add a contributor to database if he does not already exist and is registered on GitHub
 // POST expected json
 // {
@@ -60,7 +79,8 @@ module.exports.addContributor = async (event) => {
     }
     await databaseService.addContributor({
       username: body.username,
-      name: `${body.firstName} ${body.lastName}`,
+      firstName: body.firstName,
+      lastName: body.lastName,
       link: `https://github.com/${body.username}`,
       contributionCount: 0,
       contributions: [],
