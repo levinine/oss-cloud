@@ -34,7 +34,7 @@ var getRepo = async (owner, repo) => {
 getForkedRepos = async username => {
   return octokit.search
     .repos({
-      q: "user:" + username + "+fork:only"
+      q: `user:${username}+fork:only`
     })
     .then(({ data, headers, status }) => {
       return data.items;
@@ -81,7 +81,7 @@ searchUserPullRequests = async (username, repo) => {
   let pullRequestNum = 0;
   do {
     await octokit.search.issuesAndPullRequests({
-      q: "repo:" + repo.owner.login + "/" + repo.name + "+author:" + username + "+is:pr",
+      q: `repo:${repo.owner.login}/${repo.name}+author:${username}+is:pr`,
       per_page: 100,
       page: pullRequestNum
     }).then(({data, headers, status}) => {
