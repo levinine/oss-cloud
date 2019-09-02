@@ -60,24 +60,42 @@ module.exports.getAllContributors = () => {
 
 
 module.exports.checkUsername = username => {
-    var params = {
-      TableName: "contributors",
-      Key: {
-        username: username
-      }
-    };
-    return new Promise((resolve, reject) => {
-      let retval;
-      docClient.get(params, function(err, data) {
-        if (err) {
-          reject(err);
-        } else {
-          if (Object.keys(data).length === 0) {
-            retval = false;
-          } else retval = true;
-          resolve(retval);
-        }
-      });
-    });
+  var params = {
+    TableName: "contributors",
+    Key: {
+      username: username
+    }
   };
+  return new Promise((resolve, reject) => {
+    let retval;
+    docClient.get(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        if (Object.keys(data).length === 0) {
+          retval = false;
+        } else retval = true;
+        resolve(retval);
+      }
+    });
+  });
+};
 
+// saves contributor object in database
+// params: contributor
+module.exports.addContributor = contributor => {
+  var params = {
+    TableName: "contributors",
+    Item: contributor
+  };
+  return new Promise((resolve, reject) => {
+    let retval;
+    docClient.put(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};

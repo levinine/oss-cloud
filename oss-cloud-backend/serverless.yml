@@ -45,11 +45,17 @@ functions:
       - http:
           path: hello
           method: get
+  addContributor:
+    handler: handler.addContributor
+    events:
+      - http:
+          path: addContributor
+          method: post
 
   getContributorPulls:
     handler: handler.updatePullRequests
     events: # http event for testing, will probably change later
-            # TODO - add scheduling
+      # TODO - add scheduling
       - http:
           path: updatePullRequests
           method: get
