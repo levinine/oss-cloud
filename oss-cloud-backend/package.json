@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^16.28.7",
+    "dynamodb-data-types": "^3.0.1",
     "serverless-dynamodb-client": "0.0.2"
   },
   "devDependencies": {

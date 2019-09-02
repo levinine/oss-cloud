@@ -31,7 +31,7 @@ custom:
       - dev
     start:
       port: 8000
-      inMemory: true
+      inMemory: false
       heapInitial: 200m
       heapMax: 1g
       migrate: true
@@ -52,10 +52,11 @@ functions:
           path: addContributor
           method: post
 
-  getContributorPulls:
-    handler: handler.getPullRequests
+  updatePullRequests:
+    handler: handler.updatePullRequests
     events: # http event for testing, will probably change later
       # TODO - add scheduling
       - http:
-          path: contributorPulls
-          method: post
+          path: updatePullRequests
+          method: get
+      
