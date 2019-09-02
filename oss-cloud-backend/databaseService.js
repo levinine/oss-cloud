@@ -1,4 +1,19 @@
-var docClient = require("serverless-dynamodb-client").doc;
+var dynamodb = require("serverless-dynamodb-client");
+var rawClient = dynamodb.raw;
+var docClient = dynamodb.doc;
+var attr = require("dynamodb-data-types").AttributeValue;
+
+module.exports.getAllContributors = () => {
+  const params = {
+    TableName: "contributors"
+  };
+  return new Promise((resolve, reject) => {
+    rawClient.scan(params, (error, data) => {
+      if (error) reject(error);
+      resolve(data.Items.map(item => attr.unwrap(item)));
+    });
+  });
+};
 
 // checks if username is already in use in database
 // params: username

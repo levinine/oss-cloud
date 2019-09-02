@@ -60,6 +60,8 @@
 <script>
 import axios from "axios";
 
+const addContributorURL = "http://localhost:3000/addContributor";
+
 export default {
   data() {
     return {
@@ -79,13 +81,14 @@ export default {
     addContributor() {
       axios({
         method: "post",
-        url: "http://localhost:3000/addContributor",
+        url: addContributorURL,
         data: this.contributor
       }).then(response => {
         if (response.data.success) {
           this.alertMessage = response.data.message;
           this.alertType = "success";
           this.showAlert = true;
+          this.$root.$emit("addedContributorEvent");
         } else {
           this.alertMessage = response.data.message;
           this.alertType = "error";
