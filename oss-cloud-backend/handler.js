@@ -24,37 +24,13 @@ module.exports.hello = async event => {
 // {
 //    username: string  
 // }
-module.exports.getPullRequests = async (event, context, callback) => {
+module.exports.updatePullRequests = async (event, context, callback) => {
   let response;
-  // check if request is valid
   try {
-    var body = JSON.parse(event.body);
-    body.username;
-  } catch {
-    response = {
-      statusCode: 500,
-      body: JSON.stringify({message: 'Invalid JSON format'})
-    };
-    return response;
-  }
-
-  if (!body.username) {
-    console.log ('Property "username" missing from request body')
-    response = {
-      statusCode: 500,
-      body: JSON.stringify({message: 'Property "username" missing from request body'})
-    };
-    return response;
-  }
-  // getting pull requests
-  try {
-    const repos = await gitHubApiService.getForkedRepos(body.username);
-    const reposDetailed = await gitHubApiService.getRepoDetails(repos);
-    const parentRepos = await gitHubApiService.getParentRepos(reposDetailed)
-    const pullRequests = await gitHubApiService.getUserPullRequests(body.username, parentRepos);
+    const results = await gitHubApiService.updatePullRequests();
     response = {
       statusCode: 200,
-      body: JSON.stringify(pullRequests)
+      body: results.toString() + " contributors updated"
     }
 
   } catch (error) {
