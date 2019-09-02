@@ -29,10 +29,6 @@ module.exports.addContributor = async (event, context, callback) => {
   try {
     // TODO create generic function for checking validity of a body
     let body = JSON.parse(event.body);
-    // check if keys exist
-    body.username;
-    body.firstName;
-    body.lastName;
     if (Object.keys(body).length !== 3) {
       throw "Invalid number of attributes in JSON";
     }
