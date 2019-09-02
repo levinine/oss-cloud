@@ -51,8 +51,9 @@ module.exports.getAllContributors = () => {
     };
     return new Promise((resolve, reject) => {
         rawClient.scan(params, (error, data) => {
-            if (error) reject(error)
-            console.log(data)
+            if (error) {
+              reject(error)
+            }
             resolve(data.Items.map((item) => attr.unwrap(item)))
         })
     })
@@ -70,13 +71,12 @@ module.exports.checkUsername = username => {
     let retval;
     docClient.get(params, function(err, data) {
       if (err) {
-        reject(err);
-      } else {
-        if (Object.keys(data).length === 0) {
-          retval = false;
-        } else retval = true;
-        resolve(retval);
+        reject(err)
       }
+      if (Object.keys(data).length === 0) {
+        resolve(false)
+      }
+      resolve(true)
     });
   });
 };

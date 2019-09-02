@@ -52,7 +52,7 @@ functions:
           path: addContributor
           method: post
 
-  getContributorPulls:
+  updatePullRequests:
     handler: handler.updatePullRequests
     events: # http event for testing, will probably change later
       # TODO - add scheduling

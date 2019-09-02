@@ -19,7 +19,7 @@ module.exports.checkUsername = async username => {
 };
 
 // returns a single repo
-var getRepo = async (owner, repo) => {
+const getRepo = async (owner, repo) => {
   return octokit.repos
     .get({
       owner: owner,
@@ -31,7 +31,7 @@ var getRepo = async (owner, repo) => {
     });
 };
 
-getForkedRepos = async username => {
+const getForkedRepos = async username => {
   return octokit.search
     .repos({
       q: `user:${username}+fork:only`
@@ -42,7 +42,7 @@ getForkedRepos = async username => {
 };
 
 // makes a call to github api for each repo in array, returning a more detailed representation of the repo
-getRepoDetails = async (repos) => {
+const getRepoDetails = async (repos) => {
   const repoPromises = repos.map((repo) => {
     return getRepo(repo.owner.login, repo.name)
   })
@@ -51,7 +51,7 @@ getRepoDetails = async (repos) => {
 }
 
 // returns the parent repos from an array of forked repos (details needed)
-getParentRepos = async (repos) => {
+const getParentRepos = async (repos) => {
   const repoPromises = repos.map((repo) => {
     return getRepo(repo.parent.owner.login, repo.parent.name);
   });
@@ -60,7 +60,7 @@ getParentRepos = async (repos) => {
 };
 
 // retrieves pull requests for given user for each repo in given array
-getUserPullRequests = async (username, repos) => {
+const getUserPullRequests = async (username, repos) => {
   let pullRequests = [];
   const pullRequestPromises = repos.map(async repo => {
     let repoPullRequests = await searchUserPullRequests(username, repo);
@@ -75,7 +75,7 @@ getUserPullRequests = async (username, repos) => {
 };
 
 // returns pull requests from a repo where given user is the author
-searchUserPullRequests = async (username, repo) => {
+const searchUserPullRequests = async (username, repo) => {
   console.log("searching pull requests: ", username, repo.name);
   var pullRequests = [];
   let pullRequestNum = 0;
@@ -98,7 +98,7 @@ searchUserPullRequests = async (username, repo) => {
 }
 
 // filter unnecessay attributes from pull requests and add status
-filterPullRequestAttributes = (pullRequests) => {
+const filterPullRequestAttributes = (pullRequests) => {
   return pullRequests.map(pr => {
     return {
       owner: pr.user.login,
@@ -107,27 +107,29 @@ filterPullRequestAttributes = (pullRequests) => {
       link: pr.html_url,
       title: pr.title,
       status: "pending"
-    };
-  });
+    }
+  })
 } 
 
 // updates pull requests for a given user
 // params: username (string) => username to get from db
 // params: pullRequests (array) => pull requests from github of the given user
-updateContributorPullRequests = async (username, pullRequests) => {
+const updateContributorPullRequests = async (username, pullRequests) => {
   const contributor = await databaseService.getContributor(username)
 
-  pullRequests = filterPullRequestAttributes(pullRequests)
+  const filteredPullRequests = filterPullRequestAttributes(pullRequests)
 
-  unitedPullRequests = unitePullRequests(pullRequests, contributor.Item.contributions);
+  const unitedPullRequests = unitePullRequests(filteredPullRequests, contributor.Item.contributions);
 
   return databaseService.updateContributorPullRequests(username, unitedPullRequests)
 }
 
 // compares two lists of pull requests by username
 // returns the elements of the first list that do not exits in the second list
-unitePullRequests = (newPullRequests, oldPullRequests) => {
-  if (!oldPullRequests || oldPullRequests.length == 0) return newPullRequests
+const unitePullRequests = (newPullRequests, oldPullRequests) => {
+  if (!oldPullRequests || oldPullRequests.length == 0) {
+    return newPullRequests
+  }
 
   const unitedPullRequests = newPullRequests.concat(
     oldPullRequests.filter(oldPr => {
@@ -137,7 +139,7 @@ unitePullRequests = (newPullRequests, oldPullRequests) => {
 }
 
 // fetches pull requests from github for a given contributor and updates the database with new pull requests
-getContributorPullRequests = async (username) => {
+const getContributorPullRequests = async (username) => {
   const repos = await getForkedRepos(username);
   const reposDetailed = await getRepoDetails(repos);
   const parentRepos = await getParentRepos(reposDetailed)
@@ -160,6 +162,6 @@ module.exports.updatePullRequests = async () => {
   })
 
   const results = await Promise.all(contributorPromises);
-  return results.map((r) => r ? 1 : 0).reduce((a, b) => a + b); // count updated users
+  return results.map(r => r ? 1 : 0).reduce((a, b) => a + b); // count updated users
 }
 
