@@ -1,28 +1,13 @@
-"use strict";
+const gitHubApiService = require('./services/gitHubApiService.js');
+const databaseService = require('./services/databaseService.js');
 
-var gitHubApiService = require("./gitHubApiService.js");
-var databaseService = require("./databaseService.js");
 
-module.exports.hello = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: "Go Serverless v1.0! Your function executed successfully!",
-        input: event
-      },
-      null,
-      2
-    )
-  };
-};
-
-module.exports.getAllContributors = async (event, context, callback) => {
+module.exports.getAllContributors = async () => {
   try {
     const contributors = await databaseService.getAllContributors();
     return {
       statusCode: 200,
-      body: JSON.stringify(contributors)
+      body: JSON.stringify(contributors),
     };
   } catch (err) {
     console.log(err);
@@ -30,8 +15,8 @@ module.exports.getAllContributors = async (event, context, callback) => {
       statusCode: 500,
       body: JSON.stringify({
         message: err.message,
-        success: false
-      })
+        success: false,
+      }),
     };
   }
 };
@@ -43,20 +28,21 @@ module.exports.getAllContributors = async (event, context, callback) => {
 //    firstName: string
 //    lastName: string
 // }
-module.exports.addContributor = async (event, context, callback) => {
+module.exports.addContributor = async (event) => {
   // check if request is valid
   let body;
+  let response;
   try {
     // TODO create generic function for checking validity of a body
     body = JSON.parse(event.body);
     if (Object.keys(body).length !== 3) {
-      throw "Invalid number of attributes in JSON";
+      throw new Error('Invalid number of attributes in JSON');
     }
   } catch (err) {
     console.log(err);
     response = {
       statusCode: 400,
-      body: JSON.stringify({ message: err.message })
+      body: JSON.stringify({ message: err.message }),
     };
     return response;
   }
@@ -66,35 +52,35 @@ module.exports.addContributor = async (event, context, callback) => {
       return {
         statusCode: 409,
         body: JSON.stringify({
-          message: "Username is already registered on this platform",
-          success: false
-        })
+          message: 'Username is already registered on this platform',
+          success: false,
+        }),
       };
     }
     if (!(await gitHubApiService.checkUsername(body.username))) {
       return {
         statusCode: 404,
         body: JSON.stringify({
-          message: "Username does not exist on GitHub",
-          success: false
-        })
+          message: 'Username does not exist on GitHub',
+          success: false,
+        }),
       };
     }
     await databaseService.addContributor({
       username: body.username,
       firstName: body.firstName,
       lastName: body.lastName,
-      link: "https://github.com/" + body.username,
+      link: `https://github.com/${body.username}`,
       contributionCount: 0,
-      contributions: []
+      contributions: [],
     });
     // TODO: call scheduler
     return {
       statusCode: 201,
       body: JSON.stringify({
-        message: "Successfully added contributor",
-        success: true
-      })
+        message: 'Successfully added contributor',
+        success: true,
+      }),
     };
   } catch (err) {
     console.log(err);
@@ -102,8 +88,8 @@ module.exports.addContributor = async (event, context, callback) => {
       statusCode: 500,
       body: JSON.stringify({
         message: err.message,
-        success: false
-      })
+        success: false,
+      }),
     };
   }
 };
@@ -113,23 +99,42 @@ module.exports.addContributor = async (event, context, callback) => {
 // {
 //    username: string
 // }
-module.exports.updatePullRequests = async (event, context, callback) => {
+module.exports.updatePullRequests = async () => {
   let response;
   try {
     const results = await gitHubApiService.updatePullRequests();
     response = {
       statusCode: 200,
-      body: results.toString() + " contributors updated"
+      body: `${results} contributors updated`,
     };
   } catch (error) {
-    console.log("error in getPullRequests handler: ", error);
+    console.log('error in getPullRequests handler: ', error);
     response = {
       statusCode: 500,
       body: JSON.stringify({
-        message: error.message
-      })
+        message: error.message,
+      }),
     };
-  } finally {
-    return response;
   }
+  return response;
+};
+
+module.exports.getContributions = async () => {
+  let response;
+  try {
+    const contributions = await databaseService.getAllContributions();
+    response = {
+      statusCode: 200,
+      body: JSON.stringify(contributions),
+    };
+  } catch (error) {
+    console.log('error in getContributions handler');
+    response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: error.message,
+      }),
+    };
+  }
+  return response;
 };

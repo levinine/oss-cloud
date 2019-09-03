@@ -39,12 +39,6 @@ custom:
       convertEmptyValues: true
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          path: hello
-          method: get
   addContributor:
     handler: handler.addContributor
     events:
@@ -64,5 +58,12 @@ functions:
       # TODO - add scheduling
       - http:
           path: updatePullRequests
+          method: get
+
+  getContributions:
+    handler: handler.getContributions
+    events:
+      - http:
+          path: contributions
           method: get
       
