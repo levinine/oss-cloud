@@ -5,13 +5,16 @@
     :items-per-page="10"
     item-key="link"
     class="elevation-1"
-  ></v-data-table>
+  >
+    <template v-slot:item.link="{ item }">
+      <a :href="item.link">{{ item.link}}</a>
+    </template>
+  </v-data-table>
 </template>
 
 <script>
-import axios from "axios";
+import { loadContributionsAxios } from "./../axiosService.js";
 
-const contributionsURL = "http://localhost:3000/contributions";
 
 export default {
   data() {
@@ -35,10 +38,7 @@ export default {
   },
   methods: {
     loadContributions() {
-      axios({
-        method: "get",
-        url: contributionsURL
-      }).then(response => {
+      loadContributionsAxios().then(response => {
         this.contributions = response.data;
       });
     }

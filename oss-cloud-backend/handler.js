@@ -1,17 +1,6 @@
-const gitHubApiService = require('./gitHubApiService.js');
-const databaseService = require('./databaseService.js');
+const gitHubApiService = require('./services/gitHubApiService.js');
+const databaseService = require('./services/databaseService.js');
 
-module.exports.hello = async (event) => ({
-  statusCode: 200,
-  body: JSON.stringify(
-    {
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    },
-    null,
-    2,
-  ),
-});
 
 module.exports.getAllContributors = async () => {
   try {
@@ -116,7 +105,7 @@ module.exports.updatePullRequests = async () => {
     const results = await gitHubApiService.updatePullRequests();
     response = {
       statusCode: 200,
-      body: `${results.toString()} contributors updated`,
+      body: `${results} contributors updated`,
     };
   } catch (error) {
     console.log('error in getPullRequests handler: ', error);

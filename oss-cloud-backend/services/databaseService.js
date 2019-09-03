@@ -63,16 +63,14 @@ module.exports.checkUsername = (username) => {
     },
   };
   return new Promise((resolve, reject) => {
-    let retval;
     docClient.get(params, (err, data) => {
       if (err) {
         reject(err);
-      } else {
-        if (Object.keys(data).length === 0) {
-          retval = false;
-        } else retval = true;
-        resolve(retval);
       }
+      if (Object.keys(data).length === 0) {
+        resolve(false);
+      }
+      resolve(true);
     });
   });
 };
