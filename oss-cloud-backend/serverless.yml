@@ -62,8 +62,7 @@ functions:
           path: updatePullRequests
           method: get
       - schedule:
-          rate: rate(30 minutes)
-          enabled: true
+          rate: rate(${env:SCHEDULER_RATE})
 
   getContributions:
     handler: handler.getContributions
