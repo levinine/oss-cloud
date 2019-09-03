@@ -1,8 +1,12 @@
-const dynamodb = require('serverless-dynamodb-client');
-
-const docClient = dynamodb.doc;
-const rawClient = dynamodb.raw;
-const attr = require('dynamodb-data-types').AttributeValue;
+const mysql = require('serverless-mysql')({
+  config: {
+    host: process.env.ENDPOINT,
+    port: process.env.PORT,
+    database: process.env.DATABASE,
+    user: process.env.USERNAME,
+    password: process.env.PASSWORD,
+  },
+});
 
 module.exports.getContributor = (username) => {
   const params = {
@@ -43,10 +47,12 @@ module.exports.updateContributorPullRequests = (username, pullRequests) => {
   });
 };
 
-module.exports.getAllContributors = () => {
+module.exports.getAllContributors = async () => {
   const params = {
     TableName: 'contributors',
   };
+  const results = await mysql.query('SELECT * FROM contributors');
+  console.log(results);
   return new Promise((resolve, reject) => {
     rawClient.scan(params, (error, data) => {
       if (error) reject(error);
