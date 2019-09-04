@@ -8,22 +8,8 @@ const mysql = require('serverless-mysql')({
   },
 });
 
-module.exports.getContributor = (username) => {
-  const params = {
-    TableName: 'contributors',
-    Key: {
-      username,
-    },
-  };
-  return new Promise((resolve, reject) => {
-    docClient.get(params, (error, data) => {
-      if (error) {
-        reject(error);
-      }
-      resolve(data);
-    });
-  });
-};
+module.exports.getContributor = (username) => mysql
+  .query('SELECT * FROM contributors WHERE username=?', [username]);
 
 module.exports.insertPullRequests = (pullRequests) => {
   const prs = pullRequests.map((pr) => [
@@ -36,8 +22,10 @@ module.exports.insertPullRequests = (pullRequests) => {
     pr.status,
     pr.author,
   ]);
-  const m = mysql.query('INSERT INTO contributions (repo, owner, number, link, title, dateCreated, status, author) VALUES ?', [prs]);
-  return m;
+  return mysql.transaction()
+    .query('INSERT INTO contributions (repo, owner, number, link, title, dateCreated, status, author) VALUES ?', [prs])
+    .rollback((e) => { throw e; })
+    .commit();
 };
 
 module.exports.getAllContributors = async () => mysql.query(
@@ -69,29 +57,7 @@ module.exports.addContributor = async (contributor) => mysql.transaction()
   .commit();
 
 
-// accepts a list of contributors and extracts a list of their contributions
-const extractContributions = (contributorList) => {
-  let contributions = [];
+module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributions');
 
-  contributorList.forEach((contributor) => {
-    contributions = contributions.concat(contributor.contributions);
-  });
-  return contributions;
-};
-
-module.exports.getAllContributions = () => {
-  const params = {
-    TableName: 'contributors',
-  };
-  return new Promise((resolve, reject) => {
-    rawClient.scan(params, (error, data) => {
-      if (error) reject(error);
-      resolve(extractContributions(data.Items.map((item) => attr.unwrap(item))));
-    });
-  });
-};
-
-module.exports.getContributorPullRequests = (username) => mysql.transaction()
-  .query('SELECT * FROM contributions WHERE author=?', [username])
-  .rollback((e) => { throw e; })
-  .commit();
+module.exports.getContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=?', [username]);
