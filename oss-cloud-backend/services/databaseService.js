@@ -3,7 +3,7 @@ const mysql = require('serverless-mysql')({
     host: process.env.ENDPOINT,
     port: process.env.PORT,
     database: process.env.DATABASE,
-    user: process.env.USERNAME,
+    user: process.env.USER,
     password: process.env.PASSWORD,
   },
 });
@@ -51,6 +51,7 @@ module.exports.getAllContributors = async () => {
   const params = {
     TableName: 'contributors',
   };
+  console.log(mysql.config());
   const results = await mysql.query('SELECT * FROM contributors');
   console.log(results);
   return new Promise((resolve, reject) => {
