@@ -28,7 +28,7 @@ module.exports.insertPullRequests = (pullRequests) => {
     .commit();
 };
 
-module.exports.getAllContributors = async () => mysql.query(
+module.exports.getAllContributors = () => mysql.query(
   'SELECT * FROM contributors',
 );
 
@@ -42,7 +42,7 @@ module.exports.checkUsername = async (username) => {
 
 // saves contributor object in database
 // params: contributor
-module.exports.addContributor = async (contributor) => mysql.transaction()
+module.exports.addContributor = (contributor) => mysql.transaction()
   .query('INSERT INTO contributors VALUES(?)',
     [[
       contributor.username,
