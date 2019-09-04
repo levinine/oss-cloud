@@ -1,20 +1,27 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="contributions"
-    :items-per-page="10"
-    item-key="link"
-    class="elevation-1"
-  >
-    <template v-slot:item.link="{ item }">
-      <a :href="item.link">{{ item.link}}</a>
-    </template>
-  </v-data-table>
+  <v-card>
+    <v-card-title>
+      Contributions
+      <div class="flex-grow-1"></div>
+      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="contributions"
+      :items-per-page="10"
+      item-key="link"
+      class="elevation-1"
+    >
+      <template v-slot:item.link="{ item }">
+        <a :href="item.link">{{ item.link}}</a>
+      </template>
+    </v-data-table>
+
+  </v-card>
 </template>
 
 <script>
 import { loadContributionsAxios } from "./../axiosService.js";
-
 
 export default {
   data() {
