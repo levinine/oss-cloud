@@ -19,8 +19,6 @@ function arraysEqual(_arr1, _arr2) {
 module.exports.checkBody = (body, attributes) => {
   try {
     const bodyObject = JSON.parse(body);
-    console.log('body', bodyObject);
-    console.log('attributes', attributes);
     if (arraysEqual(Object.keys(bodyObject), attributes)) {
       return [true, 'Body is valid', bodyObject];
     }

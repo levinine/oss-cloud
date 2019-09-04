@@ -3,6 +3,7 @@ import axios from "axios";
 const addContributorURL = "http://localhost:3000/addContributor";
 const getAllContributorsURL = "http://localhost:3000/contributors";
 const contributionsURL = "http://localhost:3000/contributions";
+const updateContributionStatusURL = "http://localhost:3000/contributionStatus"
 
 export const addContributorAxios = contributor => {
   return axios({
@@ -23,5 +24,18 @@ export const loadContributionsAxios = () => {
   return axios({
     method: 'get',
     url: contributionsURL,
+  })
+}
+
+export const updateContributionStatus = (owner, repo, number, status) => {
+  return axios({
+    method: 'post',
+    url: updateContributionStatusURL,
+    data: {
+      owner,
+      repo,
+      number,
+      status
+    }
   })
 }

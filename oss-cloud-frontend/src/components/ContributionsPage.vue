@@ -15,6 +15,23 @@
       <template v-slot:item.link="{ item }">
         <a :href="item.link">{{ item.link}}</a>
       </template>
+
+      <template v-slot:item.actions="{ item }">
+          <v-item-group row>
+          <v-btn fab dark color="green" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Visible')">
+            <v-icon dark>mdi-eye</v-icon>
+          </v-btn>
+          <v-btn fab dark color="red" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Hidden')">
+            <v-icon dark>mdi-eye-off</v-icon>
+          </v-btn>
+        </v-item-group>
+      </template>
+
+      <template v-slot:item.status="{ item }">
+        <td v-if="item.status=='Visible'" class="green--text text-xs-left">{{ item.status }}</td>
+        <td v-else-if="item.status=='Hidden'" class="red--text">{{ item.status }}</td>
+        <td v-else>{{ item.status }}</td>
+      </template>
     </v-data-table>
 
   </v-card>
@@ -22,6 +39,7 @@
 
 <script>
 import { loadContributionsAxios } from "./../axiosService.js";
+import { updateContributionStatus } from "./../axiosService.js";
 
 export default {
   data() {
@@ -32,13 +50,19 @@ export default {
         {
           text: "Username",
           align: "left",
-          value: "owner"
+          value: "author",
         },
-        { text: "Repository", value: "repo" },
-        { text: "Number", value: "number" },
+        // {
+        //   text: "Owner",
+        //   align: "left",
+        //   value: "owner"
+        // },
+        // { text: "Repository", value: "repo" },
+        // { text: "Number", value: "number" },
         { text: "Title", value: "title" },
         { text: "Link", value: "link" },
-        { text: "Status", value: "status"}
+        { text: "Status", value: "status", align: "left"},
+        { text: "Actions", value: "actions"},
       ],
       contributions: []
     };
@@ -48,6 +72,13 @@ export default {
       loadContributionsAxios().then(response => {
         this.contributions = response.data;
       });
+    },
+    updateStatus(contribution, status) {
+      updateContributionStatus(contribution.owner, contribution.repo, contribution.number, status)
+      .then(response => {
+        console.log(response);
+        this.loadContributions();
+      })
     }
   },
   mounted: function() {
