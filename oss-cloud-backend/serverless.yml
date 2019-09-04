@@ -40,4 +40,11 @@ functions:
       - http:
           path: contributions
           method: get
+  
+  updateContributionStatus:
+    handler: handler.updateContributionStatus
+    events:
+      - http:
+          path: contributionStatus
+          method: post
       
