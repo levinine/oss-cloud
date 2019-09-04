@@ -25,8 +25,6 @@
         </v-btn>
         
         <AddContributor></AddContributor>
-
-
     </v-app-bar>
 </template>
 

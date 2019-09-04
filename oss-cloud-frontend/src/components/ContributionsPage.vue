@@ -23,7 +23,6 @@
 <script>
 import { loadContributionsAxios } from "./../axiosService.js";
 
-
 export default {
   data() {
     return {
