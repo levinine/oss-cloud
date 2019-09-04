@@ -7,37 +7,7 @@ provider:
 plugins:
   - serverless-offline-scheduler
   - serverless-dotenv-plugin # used to store github access token locally to keep it secret
-  - serverless-dynamodb-local
   - serverless-offline
-
-resources:
-  Resources:
-    contributors:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: contributors
-        AttributeDefinitions:
-          - AttributeName: username
-            AttributeType: S
-        KeySchema:
-          - AttributeName: username
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-custom:
-  dynamodb:
-    stages:
-      - dev
-    start:
-      port: 8000
-      inMemory: false
-      heapInitial: 200m
-      heapMax: 1g
-      migrate: true
-      seed: true
-      convertEmptyValues: true
 
 functions:
   addContributor:

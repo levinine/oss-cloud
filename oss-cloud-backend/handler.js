@@ -71,8 +71,7 @@ module.exports.addContributor = async (event) => {
       firstName: body.firstName,
       lastName: body.lastName,
       link: `https://github.com/${body.username}`,
-      contributionCount: 0,
-      contributions: [],
+      visibleContributionCount: 0,
     });
     // TODO: call scheduler
     return {

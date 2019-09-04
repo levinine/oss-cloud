@@ -11,7 +11,7 @@
   "dependencies": {
     "@octokit/rest": "^16.28.7",
     "dynamodb-data-types": "^3.0.1",
-    "serverless-dynamodb-client": "0.0.2"
+    "serverless-mysql": "^1.5.1"
   },
   "devDependencies": {
     "eslint": "^6.3.0",
@@ -19,7 +19,6 @@
     "eslint-plugin-import": "^2.18.2",
     "serverless": "^1.51.0",
     "serverless-dotenv-plugin": "^2.1.1",
-    "serverless-dynamodb-local": "^0.2.38",
     "serverless-offline": "^5.10.1",
     "serverless-offline-scheduler": "^0.3.8"
   }
