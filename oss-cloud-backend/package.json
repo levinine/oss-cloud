@@ -19,6 +19,7 @@
     "eslint-plugin-import": "^2.18.2",
     "serverless": "^1.51.0",
     "serverless-dotenv-plugin": "^2.1.1",
-    "serverless-offline": "^5.10.1"
+    "serverless-offline": "^5.10.1",
+    "serverless-offline-scheduler": "^0.3.8"
   }
 }
