@@ -25,42 +25,24 @@ module.exports.getContributor = (username) => {
   });
 };
 
-module.exports.updateContributorPullRequests = (username, pullRequests) => {
-  const params = {
-    TableName: 'contributors',
-    Key: {
-      username,
-    },
-    UpdateExpression: 'SET contributions = :prs',
-    ExpressionAttributeValues: {
-      ':prs': pullRequests,
-    },
-    ReturnValues: 'UPDATED_NEW',
-  };
-  return new Promise((resolve, reject) => {
-    docClient.update(params, (error) => {
-      if (error) {
-        reject(error);
-      }
-      resolve(true);
-    });
-  });
+module.exports.insertPullRequests = (pullRequests) => {
+  const prs = pullRequests.map((pr) => [
+    pr.repo,
+    pr.owner,
+    pr.number,
+    pr.link,
+    pr.title,
+    pr.dateCreated,
+    pr.status,
+    pr.author,
+  ]);
+  const m = mysql.query('INSERT INTO contributions (repo, owner, number, link, title, dateCreated, status, author) VALUES ?', [prs]);
+  return m;
 };
 
-module.exports.getAllContributors = async () => {
-  const params = {
-    TableName: 'contributors',
-  };
-  console.log(mysql.config());
-  const results = await mysql.query('SELECT * FROM contributors');
-  console.log(results);
-  return new Promise((resolve, reject) => {
-    rawClient.scan(params, (error, data) => {
-      if (error) reject(error);
-      resolve(data.Items.map((item) => attr.unwrap(item)));
-    });
-  });
-};
+module.exports.getAllContributors = async () => mysql.query(
+  'SELECT * FROM contributors',
+);
 
 module.exports.checkUsername = (username) => {
   const params = {
@@ -121,3 +103,8 @@ module.exports.getAllContributions = () => {
     });
   });
 };
+
+module.exports.getContributorPullRequests = (username) => mysql.transaction()
+  .query('SELECT * FROM contributions WHERE author=?', [username])
+  .rollback((e) => { throw e; })
+  .commit();
