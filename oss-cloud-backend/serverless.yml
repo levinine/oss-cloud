@@ -5,6 +5,7 @@ provider:
   runtime: nodejs10.x
 
 plugins:
+  - serverless-offline-scheduler
   - serverless-dotenv-plugin # used to store github access token locally to keep it secret
   - serverless-offline
 
@@ -15,6 +16,7 @@ functions:
       - http:
           path: addContributor
           method: post
+
   getAllContributors:
     handler: handler.getAllContributors
     events:
@@ -29,6 +31,8 @@ functions:
       - http:
           path: updatePullRequests
           method: get
+      - schedule:
+          rate: rate(${env:SCHEDULER_RATE})
 
   getContributions:
     handler: handler.getContributions

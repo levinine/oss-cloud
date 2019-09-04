@@ -10,14 +10,13 @@ const databaseService = require('./databaseService.js');
 // checks if username exists on GitHub
 // params: username
 // return: Promise bool if
-module.exports.checkUsername = async (username) => {
-  octokit.search
-    .users({
-      q: `user:${username}`,
-    })
-    .then(() => true)
-    .catch(() => false);
-};
+module.exports.checkUsername = async (username) => octokit.search
+  .users({
+    q: `user:${username}`,
+  })
+  .then(() => true)
+  .catch(() => false);
+
 // returns a single repo
 const getRepo = async (owner, repo) => octokit.repos
   .get({

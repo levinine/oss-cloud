@@ -44,43 +44,30 @@ module.exports.getAllContributors = async () => mysql.query(
   'SELECT * FROM contributors',
 );
 
-module.exports.checkUsername = (username) => {
-  const params = {
-    TableName: 'contributors',
-    Key: {
-      username,
-    },
-  };
-  return new Promise((resolve, reject) => {
-    docClient.get(params, (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      if (Object.keys(data).length === 0) {
-        resolve(false);
-      }
-      resolve(true);
-    });
-  });
+module.exports.checkUsername = async (username) => {
+  const res = await mysql
+    .query('SELECT username FROM contributors WHERE username = ?',
+      [username]);
+  return res.length !== 0;
 };
+
 
 // saves contributor object in database
 // params: contributor
-module.exports.addContributor = (contributor) => {
-  const params = {
-    TableName: 'contributors',
-    Item: contributor,
-  };
-  return new Promise((resolve, reject) => {
-    docClient.put(params, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
-};
+module.exports.addContributor = async (contributor) => mysql.transaction()
+  .query('INSERT INTO contributors VALUES(?)',
+    [[
+      contributor.username,
+      contributor.firstName,
+      contributor.lastName,
+      contributor.link,
+      contributor.visibleContributionCount,
+    ]])
+  .rollback((e) => {
+    throw e;
+  })
+  .commit();
+
 
 // accepts a list of contributors and extracts a list of their contributions
 const extractContributions = (contributorList) => {
