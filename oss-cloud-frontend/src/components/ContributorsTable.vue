@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Contributors table
+      Contributors
       <div class="flex-grow-1"></div>
       <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
     </v-card-title>

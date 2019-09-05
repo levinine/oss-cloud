@@ -62,6 +62,7 @@ const searchUserPullRequests = async (username, repo) => {
           response.data.items.map((pr) => {
             const newPr = pr;
             newPr.repo = repo.name; // add repo name as attribute of pull request
+            newPr.owner = repo.owner.login;
             return newPr;
           }),
         );
@@ -89,47 +90,47 @@ const getUserPullRequests = async (username, repos) => {
 
 // filter unnecessay attributes from pull requests and add status
 const filterPullRequestAttributes = (pullRequests) => pullRequests.map((pr) => ({
-  owner: pr.user.login,
+  owner: pr.owner,
   repo: pr.repo,
   number: pr.number,
   link: pr.html_url,
   title: pr.title,
   status: 'Pending',
+  author: pr.user.login,
+  dateCreated: pr.created_at,
 }));
 
 // compares two lists of pull requests by username
 // returns the elements of the first list that do not exits in the second list
-const unitePullRequests = (newPullRequests, oldPullRequests) => {
+const comparePullRequests = (newPullRequests, oldPullRequests) => {
   if (!oldPullRequests || oldPullRequests.length === 0) return newPullRequests;
 
-  const unitedPullRequests = newPullRequests.concat(
-    oldPullRequests.filter(
-      (oldPr) => !newPullRequests.find(
-        (newPr) => oldPr.owner === newPr.owner
-            && oldPr.repo === newPr.repo
-            && oldPr.number === newPr.number,
-      ),
-    ),
-  );
-  return unitedPullRequests;
+  const comparedPullRequests = newPullRequests
+    .filter((newPr) => !oldPullRequests.find((oldPr) => oldPr.owner === newPr.owner
+        && oldPr.repo === newPr.repo
+        && oldPr.number === newPr.number));
+  return comparedPullRequests;
 };
 
 // updates pull requests for a given user
 // params: username (string) => username to get from db
 // params: pullRequests (array) => pull requests from github of the given user
 const updateContributorPullRequests = async (username, pullRequests) => {
-  const contributor = await databaseService.getContributor(username);
-
   const filteredPullRequests = filterPullRequestAttributes(pullRequests);
 
-  const unitedPullRequests = unitePullRequests(
+  const [oldPullRequests] = await databaseService.getContributorPullRequests(username);
+
+
+  const comparedPullRequests = comparePullRequests(
     filteredPullRequests,
-    contributor.Item.contributions,
+    oldPullRequests,
   );
 
-  return databaseService.updateContributorPullRequests(
-    username,
-    unitedPullRequests,
+  if (comparedPullRequests.length === 0) {
+    return false;
+  }
+  return databaseService.insertPullRequests(
+    comparedPullRequests,
   );
 };
 
