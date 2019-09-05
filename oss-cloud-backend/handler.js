@@ -133,13 +133,24 @@ module.exports.updatePullRequests = async () => {
   return response;
 };
 
-module.exports.getContributions = async () => {
+module.exports.getContributions = async (event) => {
+  const {
+    sortBy, sortDesc, page, itemsPerPage,
+  } = event.queryStringParameters;
   let response;
   try {
-    const contributions = await databaseService.getAllContributions();
+    const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
+      sortBy,
+      sortDesc: sortDesc === 'true',
+      page: parseInt(page, 10),
+      itemsPerPage: parseInt(itemsPerPage, 10),
+    });
     response = {
       statusCode: 200,
-      body: JSON.stringify(contributions),
+      body: JSON.stringify({
+        contributions,
+        contributionsLength: contributionsLength['COUNT(*)'],
+      }),
     };
   } catch (error) {
     console.log('error in getContributions handler');

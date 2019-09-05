@@ -33,11 +33,11 @@ module.exports.getContributorsPaging = (params) => mysql
   .transaction()
   .query(
     `SELECT * FROM contributors WHERE INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
-    OR INSTR(lastName, ?) > 0 ORDER BY ${SqlString.escapeId(
-    params.sortBy === undefined ? 'username' : params.sortBy,
-  )} ${params.sortDesc ? 'DESC' : ''}
+    OR INSTR(lastName, ?) > 0 ORDER BY ??
+    ${params.sortDesc ? 'DESC' : 'ASC'}
      LIMIT ?,?`,
     [params.searchParam, params.searchParam, params.searchParam,
+      params.sortBy === undefined ? 'username' : params.sortBy,
       (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
   )
   .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
@@ -70,7 +70,22 @@ module.exports.addContributor = (contributor) => mysql.query('INSERT INTO contri
   ],
 ]);
 
-module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributions');
+module.exports.getContributionsPaging = (params) => mysql
+  .transaction()
+  .query(
+    `SELECT * FROM contributions ORDER BY
+    ${params.sortBy === 'repo' ? `owner ${params.sortDesc ? 'DESC' : 'ASC'}, ` : ''}
+    ?? ${params.sortDesc ? 'DESC' : 'ASC'}
+    LIMIT ?,?`,
+    [
+      params.sortBy === undefined ? 'author' : params.sortBy,
+      (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
+  )
+  .query('SELECT COUNT(*) FROM contributions')
+  .rollback((e) => {
+    throw e;
+  })
+  .commit();
 
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
