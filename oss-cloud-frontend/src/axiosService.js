@@ -28,13 +28,13 @@ export const loadContributionsAxios = () => {
   });
 };
 
-export const updateContributionStatus = (status, id) => {
+export const updateContributionStatus = (status, contribution) => {
   return axios({
     method: "post",
     url: updateContributionStatusURL,
     data: {
       status,
-      id
+      contribution
     }
   });
 };

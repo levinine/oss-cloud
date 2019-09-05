@@ -61,22 +61,38 @@ module.exports.checkUsername = async (username) => {
 
 // saves contributor object in database
 // params: contributor
-module.exports.addContributor = (contributor) => mysql.query('INSERT INTO contributors VALUES(?)', [
-  [
-    contributor.username,
-    contributor.firstName,
-    contributor.lastName,
-    contributor.link,
-    contributor.visibleContributionCount,
-  ],
-]);
+module.exports.addContributor = (contributor) => mysql
+  .query('INSERT INTO contributors (username, firstName, lastName, link, visibleContributionCount) VALUES(?)',
+    [[
+      contributor.username,
+      contributor.firstName,
+      contributor.lastName,
+      contributor.link,
+      contributor.visibleContributionCount,
+    ]]);
+
 
 module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributions');
 
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
 
-
-module.exports.updateContributionStatus = (status, id) => mysql
-  .query('UPDATE contributions SET status=? WHERE id=?',
-    [status, id]);
+// update status of contribution and update contributor's visible contribution count
+module.exports.updateContributionStatus = async (status, id, author) => {
+  const [oldContribution] = await mysql.query('SELECT * FROM contributions WHERE id=?', [id]);
+  let query;
+  if (status === 'Visible' && oldContribution.status !== 'Visible') {
+    query = 'UPDATE contributors SET visibleContributionCount = visibleContributionCount + 1 WHERE username = ?';
+  } else if (status !== 'Visible' && oldContribution.status === 'Visible') {
+    query = 'UPDATE contributors SET visibleContributionCount = visibleContributionCount - 1 WHERE username = ?';
+  } else {
+    // no need to update visible contribuion count
+    return mysql.query('UPDATE contributions SET status=? WHERE id=?', [status, id]);
+  }
+  // need to update both contribuion status and visible contribution count
+  return mysql.transaction()
+    .query('UPDATE contributions SET status=? WHERE id=?', [status, id])
+    .query(query, [author])
+    .rollback((e) => { throw e; })
+    .commit();
+};
