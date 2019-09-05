@@ -58,7 +58,6 @@ module.exports.addContributor = async (event) => {
         }),
       };
     }
-    console.log('Adding contributor', body.username, 'to database');
     await databaseService.addContributor({
       username: body.username,
       firstName: body.firstName,

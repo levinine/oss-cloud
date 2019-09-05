@@ -47,7 +47,6 @@ const getParentRepos = async (repos) => {
 
 // returns pull requests from a repo where given user is the author
 const searchUserPullRequests = async (username, repo) => {
-  console.log('searching pull requests: ', username, repo.name);
   let pullRequests = [];
   let pullRequestNum = 0;
   do {
@@ -84,7 +83,6 @@ const getUserPullRequests = async (username, repos) => {
 
   await Promise.all(pullRequestPromises);
 
-  console.log('Retrieved', pullRequests.length, 'for user', username);
   return pullRequests;
 };
 
