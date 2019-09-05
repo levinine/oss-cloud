@@ -139,7 +139,7 @@ const updateContributorPullRequests = async (username, pullRequests) => {
 
 // fetches pull requests from github for a given contributor
 // and updates the database with new pull requests
-const getContributorPullRequests = async (username) => {
+module.exports.getContributorPullRequests = async (username) => {
   const repos = await getForkedRepos(username);
   const reposDetailed = await getRepoDetails(repos);
   const parentRepos = await getParentRepos(reposDetailed);
@@ -154,7 +154,7 @@ module.exports.updatePullRequests = async () => {
     return 0;
   }
   const contributorPromises = contributors.map(async (contributor) => {
-    const updates = await getContributorPullRequests(contributor.username);
+    const updates = await this.getContributorPullRequests(contributor.username);
     return updates;
   });
 
