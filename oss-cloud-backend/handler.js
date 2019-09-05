@@ -5,13 +5,14 @@ const databaseService = require('./services/databaseService.js');
 module.exports.getAllContributorsAndCount = async (event) => {
   try {
     const {
-      sortBy, sortDesc, page, itemsPerPage,
+      sortBy, sortDesc, page, itemsPerPage, searchParam,
     } = event.queryStringParameters;
     const [contributors, [contributorsCount]] = await databaseService.getContributorsPaging({
       sortBy,
       sortDesc: sortDesc === 'true',
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
+      searchParam,
     });
     return {
       statusCode: 200,

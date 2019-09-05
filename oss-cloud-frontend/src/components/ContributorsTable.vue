@@ -3,7 +3,15 @@
     <v-card-title>
       Contributors
       <div class="flex-grow-1"></div>
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+      <v-text-field
+        v-model="searchText"
+        @click:append="updateSeachParam"
+        @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
+        append-icon="search"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -64,7 +72,8 @@ export default {
       itemsPerPage: 10,
       totalContributors: 0,
       loading: false,
-      search: "",
+      searchText: "",
+      searchParam: "",
       options: {},
       singleExpand: true,
       expanded: [],
@@ -97,21 +106,33 @@ export default {
         this.loadContributors();
       },
       deep: true
+    },
+    searchParam: {
+      handler() {
+        this.loadContributors();
+      }
     }
   },
   methods: {
+    updateSeachParam() {
+      this.searchParam = this.searchText;
+    },
     loadContributors() {
       this.loading = true;
       let { sortBy, sortDesc, page, itemsPerPage } = this.options;
       sortBy = sortBy[0];
       sortDesc = sortDesc[0];
-      loadContributorsAxios({ sortBy, sortDesc, page, itemsPerPage }).then(
-        response => {
-          this.contributors = response.data.contributors;
-          this.totalContributors = response.data.contributorsCount;
-          this.loading = false;
-        }
-      );
+      loadContributorsAxios({
+        sortBy,
+        sortDesc,
+        page,
+        itemsPerPage,
+        searchParam: this.searchParam
+      }).then(response => {
+        this.contributors = response.data.contributors;
+        this.totalContributors = response.data.contributorsCount;
+        this.loading = false;
+      });
     }
   },
   mounted: function() {

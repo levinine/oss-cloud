@@ -37,11 +37,13 @@ module.exports.insertPullRequests = (pullRequests) => {
 module.exports.getContributorsPaging = (params) => mysql
   .transaction()
   .query(
-    `SELECT * FROM contributors  ORDER BY ${SqlString.escapeId(
-      params.sortBy === undefined ? 'username' : params.sortBy,
-    )} ${params.sortDesc ? 'DESC' : ''}
+    `SELECT * FROM contributors WHERE INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
+    OR INSTR(lastName, ?) > 0 ORDER BY ${SqlString.escapeId(
+    params.sortBy === undefined ? 'username' : params.sortBy,
+  )} ${params.sortDesc ? 'DESC' : ''}
      LIMIT ?,?`,
-    [(params.page - 1) * params.itemsPerPage, params.itemsPerPage],
+    [params.searchParam, params.searchParam, params.searchParam,
+      (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
   )
   .query('SELECT COUNT(*) FROM contributors')
   .rollback((e) => {
