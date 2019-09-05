@@ -47,7 +47,6 @@ const getParentRepos = async (repos) => {
 
 // returns pull requests from a repo where given user is the author
 const searchUserPullRequests = async (username, repo) => {
-  console.log('searching pull requests: ', username, repo.name);
   let pullRequests = [];
   let pullRequestNum = 0;
   do {
@@ -84,7 +83,6 @@ const getUserPullRequests = async (username, repos) => {
 
   await Promise.all(pullRequestPromises);
 
-  console.log('Retrieved', pullRequests.length, 'for user', username);
   return pullRequests;
 };
 
@@ -137,7 +135,7 @@ const updateContributorPullRequests = async (username, pullRequests) => {
 
 // fetches pull requests from github for a given contributor
 // and updates the database with new pull requests
-const getContributorPullRequests = async (username) => {
+module.exports.getContributorPullRequests = async (username) => {
   const repos = await getForkedRepos(username);
   const reposDetailed = await getRepoDetails(repos);
   const parentRepos = await getParentRepos(reposDetailed);
@@ -152,7 +150,7 @@ module.exports.updatePullRequests = async () => {
     return 0;
   }
   const contributorPromises = contributors.map(async (contributor) => {
-    const updates = await getContributorPullRequests(contributor.username);
+    const updates = await this.getContributorPullRequests(contributor.username);
     return updates;
   });
 

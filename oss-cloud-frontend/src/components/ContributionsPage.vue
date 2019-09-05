@@ -31,6 +31,7 @@
             width="30"
             class="mx-1"
             @click="updateStatus(item, 'Visible')"
+            v-if="item.status != 'Visible'"
           >
             <v-icon dark>mdi-eye</v-icon>
           </v-btn>
@@ -42,6 +43,7 @@
             width="30"
             class="mx-1"
             @click="updateStatus(item, 'Hidden')"
+            v-if="item.status != 'Hidden'"
           >
             <v-icon dark>mdi-eye-off</v-icon>
           </v-btn>
@@ -123,7 +125,7 @@ export default {
       });
     },
     updateStatus(contribution, status) {
-      updateContributionStatus(status, contribution.id).then(response => {
+      updateContributionStatus(status, contribution).then(response => {
         console.log(response);
         this.loadContributions();
       });
