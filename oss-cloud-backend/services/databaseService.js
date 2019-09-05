@@ -48,6 +48,7 @@ module.exports.getContributorsPaging = (params) => mysql
   })
   .commit();
 
+
 module.exports.getAllContributors = () => mysql.query('SELECT * FROM contributors');
 
 module.exports.checkUsername = async (username) => {
