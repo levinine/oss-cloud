@@ -93,7 +93,7 @@ export default {
         { text: "Repository", value: "repo" },
         { text: "Title", value: "title" },
         { text: "Status", value: "status", align: "left" },
-        { text: "Actions", value: "actions", align: "right", sortable: false },
+        { text: "Actions", value: "actions", align: "center", sortable: false },
         { text: "Github", value: "link", align: "center", sortable: false }
       ],
       contributions: []
