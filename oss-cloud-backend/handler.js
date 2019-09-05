@@ -162,8 +162,7 @@ module.exports.updateContributionStatus = async (event) => {
     return response;
   }
 
-  const result = await databaseService.updateContributionStatus(body.status,
-    body.id);
+  const result = await databaseService.updateContributionStatus(body.status, body.id);
   const response = {
     status: 200,
     body: JSON.stringify({

@@ -11,7 +11,7 @@ CREATE TABLE `contributions` (
   PRIMARY KEY (`id`),
   KEY `owner_FK_idx` (`author`),
   CONSTRAINT `author_FK` FOREIGN KEY (`author`) REFERENCES `contributors` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
 
 CREATE TABLE `contributors` (
@@ -24,4 +24,4 @@ CREATE TABLE `contributors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
