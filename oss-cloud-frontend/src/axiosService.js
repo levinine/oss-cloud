@@ -12,16 +12,17 @@ export const addContributorAxios = contributor => {
   });
 };
 
-export const loadContributorsAxios = () => {
+export const loadContributorsAxios = options => {
   return axios({
     method: "get",
-    url: getAllContributorsURL
+    url: getAllContributorsURL,
+    params: options
   });
 };
 
 export const loadContributionsAxios = () => {
   return axios({
-    method: 'get',
-    url: contributionsURL,
-  })
-}
+    method: "get",
+    url: contributionsURL
+  });
+};

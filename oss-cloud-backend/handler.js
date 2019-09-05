@@ -2,12 +2,25 @@ const gitHubApiService = require('./services/gitHubApiService.js');
 const databaseService = require('./services/databaseService.js');
 
 
-module.exports.getAllContributors = async () => {
+module.exports.getAllContributorsAndCount = async (event) => {
   try {
-    const contributors = await databaseService.getAllContributors();
+    const {
+      sortBy, sortDesc, page, itemsPerPage,
+    } = event.queryStringParameters;
+    const [contributors, [contributorsCount]] = await databaseService.getContributorsPaging({
+      sortBy,
+      sortDesc: sortDesc === 'true',
+      page: parseInt(page, 10),
+      itemsPerPage: parseInt(itemsPerPage, 10),
+    });
     return {
       statusCode: 200,
-      body: JSON.stringify(contributors),
+      body: JSON.stringify(
+        {
+          contributors,
+          contributorsCount: contributorsCount['COUNT(*)'],
+        },
+      ),
     };
   } catch (err) {
     console.log(err);

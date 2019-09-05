@@ -8,7 +8,12 @@
     <v-data-table
       :headers="headers"
       :items="contributors"
-      :search="search"
+      :page.sync="page"
+      hide-default-footer
+      @page-count="pageCount = $event"
+      :options.sync="options"
+      :server-items-length="totalContributors"
+      :loading="loading"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
       item-key="username"
@@ -42,6 +47,9 @@
         <a :href="item.link">{{ item.username}}</a>
       </template>
     </v-data-table>
+    <div class="text-center pt-2">
+      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+    </div>
   </v-card>
 </template>
 
@@ -51,7 +59,13 @@ import { loadContributorsAxios } from "./../axiosService.js";
 export default {
   data() {
     return {
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 10,
+      totalContributors: 0,
+      loading: false,
       search: "",
+      options: {},
       singleExpand: true,
       expanded: [],
       headers: [
@@ -77,15 +91,31 @@ export default {
       }
     };
   },
+  watch: {
+    options: {
+      handler() {
+        this.loadContributors();
+      },
+      deep: true
+    }
+  },
   methods: {
     loadContributors() {
-      loadContributorsAxios().then(response => {
-        this.contributors = response.data;
-      });
+      this.loading = true;
+      let { sortBy, sortDesc, page, itemsPerPage } = this.options;
+      sortBy = sortBy[0];
+      sortDesc = sortDesc[0];
+      loadContributorsAxios({ sortBy, sortDesc, page, itemsPerPage }).then(
+        response => {
+          this.contributors = response.data.contributors;
+          this.totalContributors = response.data.contributorsCount;
+          this.loading = false;
+        }
+      );
     }
   },
   mounted: function() {
-    this.loadContributors();
+    this.options.itemsPerPage = 15;
     this.$root.$on("addedContributorEvent", () => {
       this.loadContributors();
     });
