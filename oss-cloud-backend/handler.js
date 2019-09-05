@@ -3,12 +3,26 @@ const databaseService = require('./services/databaseService.js');
 const utility = require('./services/utility.js');
 
 
-module.exports.getAllContributors = async () => {
+module.exports.getContributors = async (event) => {
   try {
-    const contributors = await databaseService.getAllContributors();
+    const {
+      sortBy, sortDesc, page, itemsPerPage, searchParam,
+    } = event.queryStringParameters;
+    const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
+      sortBy,
+      sortDesc: sortDesc === 'true',
+      page: parseInt(page, 10),
+      itemsPerPage: parseInt(itemsPerPage, 10),
+      searchParam,
+    });
     return {
       statusCode: 200,
-      body: JSON.stringify(contributors),
+      body: JSON.stringify(
+        {
+          contributors,
+          contributorsLength: contributorsLength['COUNT(*)'],
+        },
+      ),
     };
   } catch (err) {
     console.log(err);

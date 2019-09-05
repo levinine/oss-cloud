@@ -3,12 +3,25 @@
     <v-card-title>
       Contributors
       <div class="flex-grow-1"></div>
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+      <v-text-field
+        v-model="searchText"
+        @click:append="updateSeachParam"
+        @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
+        append-icon="search"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
     </v-card-title>
     <v-data-table
       :headers="headers"
       :items="contributors"
-      :search="search"
+      :page.sync="page"
+      hide-default-footer
+      @page-count="pageCount = $event"
+      :options.sync="options"
+      :server-items-length="contributorsLength"
+      :loading="loading"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
       item-key="username"
@@ -42,6 +55,9 @@
         <a :href="item.link">{{ item.username}}</a>
       </template>
     </v-data-table>
+    <div class="text-center pt-2">
+      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+    </div>
   </v-card>
 </template>
 
@@ -51,7 +67,13 @@ import { loadContributorsAxios } from "./../axiosService.js";
 export default {
   data() {
     return {
-      search: "",
+      page: 1,
+      pageCount: 0,
+      contributorsLength: 0,
+      loading: false,
+      searchText: "",
+      searchParam: "",
+      options: {},
       singleExpand: true,
       expanded: [],
       headers: [
@@ -77,15 +99,43 @@ export default {
       }
     };
   },
+  watch: {
+    options: {
+      handler() {
+        this.loadContributors();
+      },
+      deep: true
+    },
+    searchParam: {
+      handler() {
+        this.loadContributors();
+      }
+    }
+  },
   methods: {
+    updateSeachParam() {
+      this.searchParam = this.searchText;
+    },
     loadContributors() {
-      loadContributorsAxios().then(response => {
-        this.contributors = response.data;
+      this.loading = true;
+      let { sortBy, sortDesc, page, itemsPerPage } = this.options;
+      sortBy = sortBy[0];
+      sortDesc = sortDesc[0];
+      loadContributorsAxios({
+        sortBy,
+        sortDesc,
+        page,
+        itemsPerPage,
+        searchParam: this.searchParam
+      }).then(response => {
+        this.contributors = response.data.contributors;
+        this.contributorsLength = response.data.contributorsLength;
+        this.loading = false;
       });
     }
   },
   mounted: function() {
-    this.loadContributors();
+    this.options.itemsPerPage = 15;
     this.$root.$on("addedContributorEvent", () => {
       this.loadContributors();
     });

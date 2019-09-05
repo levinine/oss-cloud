@@ -3,7 +3,7 @@ import axios from "axios";
 const addContributorURL = "http://localhost:3000/addContributor";
 const getAllContributorsURL = "http://localhost:3000/contributors";
 const contributionsURL = "http://localhost:3000/contributions";
-const updateContributionStatusURL = "http://localhost:3000/contributionStatus"
+const updateContributionStatusURL = "http://localhost:3000/contributionStatus";
 
 export const addContributorAxios = contributor => {
   return axios({
@@ -13,27 +13,28 @@ export const addContributorAxios = contributor => {
   });
 };
 
-export const loadContributorsAxios = () => {
+export const loadContributorsAxios = options => {
   return axios({
     method: "get",
-    url: getAllContributorsURL
+    url: getAllContributorsURL,
+    params: options
   });
 };
 
 export const loadContributionsAxios = () => {
   return axios({
-    method: 'get',
-    url: contributionsURL,
-  })
-}
+    method: "get",
+    url: contributionsURL
+  });
+};
 
 export const updateContributionStatus = (status, contribution) => {
   return axios({
-    method: 'post',
+    method: "post",
     url: updateContributionStatusURL,
     data: {
       status,
       contribution
     }
-  })
-}
+  });
+};
