@@ -69,7 +69,6 @@ export default {
     return {
       page: 1,
       pageCount: 0,
-      itemsPerPage: 10,
       contributorsLength: 0,
       loading: false,
       searchText: "",

@@ -23,15 +23,10 @@ module.exports.insertPullRequests = (pullRequests) => {
     pr.author,
   ]);
   return mysql
-    .transaction()
     .query(
       'INSERT INTO contributions (repo, owner, number, link, title, dateCreated, status, author) VALUES ?',
       [prs],
-    )
-    .rollback((e) => {
-      throw e;
-    })
-    .commit();
+    );
 };
 
 module.exports.getContributorsPaging = (params) => mysql

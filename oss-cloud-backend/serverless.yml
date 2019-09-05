@@ -17,8 +17,8 @@ functions:
           path: addContributor
           method: post
 
-  getAllContributors:
-    handler: handler.getAllContributorsAndCount
+  getContributors:
+    handler: handler.getContributors
     events:
       - http:
           path: contributors

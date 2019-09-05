@@ -2,7 +2,7 @@ const gitHubApiService = require('./services/gitHubApiService.js');
 const databaseService = require('./services/databaseService.js');
 
 
-module.exports.getAllContributorsAndCount = async (event) => {
+module.exports.getContributors = async (event) => {
   try {
     const {
       sortBy, sortDesc, page, itemsPerPage, searchParam,
