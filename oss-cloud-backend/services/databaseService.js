@@ -33,11 +33,11 @@ module.exports.getContributorsPaging = (params) => mysql
   .transaction()
   .query(
     `SELECT * FROM contributors WHERE INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
-    OR INSTR(lastName, ?) > 0 ORDER BY ${SqlString.escapeId(
-    params.sortBy === undefined ? 'username' : params.sortBy,
-  )} ${params.sortDesc ? 'DESC' : ''}
+    OR INSTR(lastName, ?) > 0 ORDER BY ??
+    ${params.sortDesc ? 'DESC' : 'ASC'}
      LIMIT ?,?`,
     [params.searchParam, params.searchParam, params.searchParam,
+      params.sortBy === undefined ? 'username' : params.sortBy,
       (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
   )
   .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
@@ -47,6 +47,7 @@ module.exports.getContributorsPaging = (params) => mysql
     throw e;
   })
   .commit();
+
 
 module.exports.getAllContributors = () => mysql.query('SELECT * FROM contributors');
 
