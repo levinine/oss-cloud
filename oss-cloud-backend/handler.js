@@ -31,21 +31,12 @@ module.exports.getAllContributors = async () => {
 // }
 module.exports.addContributor = async (event) => {
   // check if request is valid
-  let body;
-  let response;
-  try {
-    // TODO create generic function for checking validity of a body
-    body = JSON.parse(event.body);
-    if (Object.keys(body).length !== 3) {
-      throw new Error('Invalid number of attributes in JSON');
-    }
-  } catch (err) {
-    console.log(err);
-    response = {
+  const [valid, message, body] = utility.checkBody(event.body, ['username', 'firstName', 'lastName']);
+  if (!valid) {
+    return {
       statusCode: 400,
-      body: JSON.stringify({ message: err.message }),
+      body: JSON.stringify({ message }),
     };
-    return response;
   }
 
   try {
@@ -74,7 +65,10 @@ module.exports.addContributor = async (event) => {
       link: `https://github.com/${body.username}`,
       visibleContributionCount: 0,
     });
-    // TODO: call scheduler
+
+    gitHubApiService.getContributorPullRequests(body.username)
+      .catch((err) => { console.log(err); });
+
     return {
       statusCode: 201,
       body: JSON.stringify({
@@ -141,7 +135,7 @@ module.exports.getContributions = async () => {
 
 
 module.exports.updateContributionStatus = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['status', 'id']);
+  const [valid, message, body] = utility.checkBody(event.body, ['status', 'contribution']);
   if (!valid) {
     const response = {
       status: 400,
@@ -162,7 +156,8 @@ module.exports.updateContributionStatus = async (event) => {
     return response;
   }
 
-  const result = await databaseService.updateContributionStatus(body.status, body.id);
+  const result = await databaseService.updateContributionStatus(body.status,
+    body.contribution.id, body.contribution.author);
   const response = {
     status: 200,
     body: JSON.stringify({

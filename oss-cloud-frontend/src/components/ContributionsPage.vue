@@ -18,10 +18,12 @@
 
       <template v-slot:item.actions="{ item }">
           <v-item-group row>
-          <v-btn fab dark color="green" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Visible')">
+          <v-btn fab dark color="green" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Visible')"
+            v-if="item.status != 'Visible'">
             <v-icon dark>mdi-eye</v-icon>
           </v-btn>
-          <v-btn fab dark color="red" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Hidden')">
+          <v-btn fab dark color="red" height="30" width="30" class="mx-1" @click="updateStatus(item, 'Hidden')"
+            v-if="item.status != 'Hidden'">
             <v-icon dark>mdi-eye-off</v-icon>
           </v-btn>
         </v-item-group>
@@ -66,7 +68,7 @@ export default {
         { text: "Repository", value: "repo" },
         { text: "Title", value: "title" },
         { text: "Status", value: "status", align: "left"},
-        { text: "Actions", value: "actions", align: "right"},
+        { text: "Actions", value: "actions", align: "center"},
         { text: "Github", value: "link", align: "center"},
       ],
       contributions: []
@@ -79,7 +81,7 @@ export default {
       });
     },
     updateStatus(contribution, status) {
-      updateContributionStatus(status, contribution.id)
+      updateContributionStatus(status, contribution)
       .then(response => {
         console.log(response);
         this.loadContributions();
