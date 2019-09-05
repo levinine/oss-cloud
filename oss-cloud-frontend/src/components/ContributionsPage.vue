@@ -79,7 +79,7 @@ export default {
       });
     },
     updateStatus(contribution, status) {
-      updateContributionStatus(contribution.owner, contribution.repo, contribution.number, status)
+      updateContributionStatus(status, contribution.id)
       .then(response => {
         console.log(response);
         this.loadContributions();

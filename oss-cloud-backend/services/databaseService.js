@@ -59,6 +59,6 @@ module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
 
 
-module.exports.updateContributionStatus = (status, owner, repo, number) => mysql
-  .query('UPDATE contributions SET status=? WHERE (owner=?) AND (repo=?) AND (number=?)',
-    [status, owner, repo, number]);
+module.exports.updateContributionStatus = (status, id) => mysql
+  .query('UPDATE contributions SET status=? WHERE id=?',
+    [status, id]);

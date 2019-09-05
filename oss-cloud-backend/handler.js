@@ -141,7 +141,7 @@ module.exports.getContributions = async () => {
 
 
 module.exports.updateContributionStatus = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['owner', 'repo', 'number', 'status']);
+  const [valid, message, body] = utility.checkBody(event.body, ['status', 'id']);
   if (!valid) {
     const response = {
       status: 400,
@@ -163,7 +163,7 @@ module.exports.updateContributionStatus = async (event) => {
   }
 
   const result = await databaseService.updateContributionStatus(body.status,
-    body.owner, body.repo, body.number);
+    body.id);
   const response = {
     status: 200,
     body: JSON.stringify({

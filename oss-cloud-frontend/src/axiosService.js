@@ -27,15 +27,13 @@ export const loadContributionsAxios = () => {
   })
 }
 
-export const updateContributionStatus = (owner, repo, number, status) => {
+export const updateContributionStatus = (status, id) => {
   return axios({
     method: 'post',
     url: updateContributionStatusURL,
     data: {
-      owner,
-      repo,
-      number,
-      status
+      status,
+      id
     }
   })
 }
