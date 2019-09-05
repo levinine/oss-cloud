@@ -126,9 +126,12 @@ const updateContributorPullRequests = async (username, pullRequests) => {
     oldPullRequests,
   );
 
+  console.log('Inserting', comparedPullRequests.length, 'pull requests into db for user', username);
+
   if (comparedPullRequests.length === 0) {
     return false;
   }
+
   return databaseService.insertPullRequests(
     comparedPullRequests,
   );

@@ -27,10 +27,24 @@
         </v-item-group>
       </template>
 
-      <template v-slot:item.status="{ item }">
-        <td v-if="item.status=='Visible'" class="green--text text-xs-left">{{ item.status }}</td>
-        <td v-else-if="item.status=='Hidden'" class="red--text">{{ item.status }}</td>
-        <td v-else>{{ item.status }}</td>
+      <template v-slot:item.status="{ item }" class="statusTd">
+        <div v-if="item.status=='Visible'" class="green--text">{{ item.status }}</div>
+        <div v-else-if="item.status=='Hidden'" class="red--text">{{ item.status }}</div>
+        <div v-else>{{ item.status }}</div>
+      </template>
+
+      <template v-slot:item.dateCreated="{ item }">
+        {{ new Date(item.dateCreated).toJSON().slice(0,10) }}
+      </template>
+
+      <template v-slot:item.link="{ item }">
+        <v-btn fab dark color="#24292e" :href="item.link" height="30" width="30">
+          <v-icon dark>mdi-github-circle</v-icon>
+        </v-btn>
+      </template>
+
+      <template v-slot:item.repo="{ item }">
+        {{ `${item.owner}/${item.repo}` }}
       </template>
     </v-data-table>
 
@@ -47,22 +61,13 @@ export default {
       singleExpand: true,
       expanded: [],
       headers: [
-        {
-          text: "Username",
-          align: "left",
-          value: "author",
-        },
-        // {
-        //   text: "Owner",
-        //   align: "left",
-        //   value: "owner"
-        // },
-        // { text: "Repository", value: "repo" },
-        // { text: "Number", value: "number" },
+        { text: "Username", align: "left", value: "author" },
+        { text: "Date Created", value: "dateCreated" },
+        { text: "Repository", value: "repo" },
         { text: "Title", value: "title" },
-        { text: "Link", value: "link" },
         { text: "Status", value: "status", align: "left"},
-        { text: "Actions", value: "actions"},
+        { text: "Actions", value: "actions", align: "right"},
+        { text: "Github", value: "link", align: "center"},
       ],
       contributions: []
     };
@@ -86,3 +91,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.statusTd {
+  min-width: 7em;
+}
+</style>
