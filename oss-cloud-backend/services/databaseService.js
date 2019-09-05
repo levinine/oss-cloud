@@ -45,7 +45,9 @@ module.exports.getContributorsPaging = (params) => mysql
     [params.searchParam, params.searchParam, params.searchParam,
       (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
   )
-  .query('SELECT COUNT(*) FROM contributors')
+  .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
+    OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
+  [params.searchParam, params.searchParam, params.searchParam])
   .rollback((e) => {
     throw e;
   })

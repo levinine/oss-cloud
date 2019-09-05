@@ -7,7 +7,7 @@ module.exports.getAllContributorsAndCount = async (event) => {
     const {
       sortBy, sortDesc, page, itemsPerPage, searchParam,
     } = event.queryStringParameters;
-    const [contributors, [contributorsCount]] = await databaseService.getContributorsPaging({
+    const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
       sortBy,
       sortDesc: sortDesc === 'true',
       page: parseInt(page, 10),
@@ -19,7 +19,7 @@ module.exports.getAllContributorsAndCount = async (event) => {
       body: JSON.stringify(
         {
           contributors,
-          contributorsCount: contributorsCount['COUNT(*)'],
+          contributorsLength: contributorsLength['COUNT(*)'],
         },
       ),
     };

@@ -20,7 +20,7 @@
       hide-default-footer
       @page-count="pageCount = $event"
       :options.sync="options"
-      :server-items-length="totalContributors"
+      :server-items-length="contributorsLength"
       :loading="loading"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
@@ -70,7 +70,7 @@ export default {
       page: 1,
       pageCount: 0,
       itemsPerPage: 10,
-      totalContributors: 0,
+      contributorsLength: 0,
       loading: false,
       searchText: "",
       searchParam: "",
@@ -130,7 +130,7 @@ export default {
         searchParam: this.searchParam
       }).then(response => {
         this.contributors = response.data.contributors;
-        this.totalContributors = response.data.contributorsCount;
+        this.contributorsLength = response.data.contributorsLength;
         this.loading = false;
       });
     }
