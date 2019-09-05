@@ -1,5 +1,6 @@
 const gitHubApiService = require('./services/gitHubApiService.js');
 const databaseService = require('./services/databaseService.js');
+const utility = require('./services/utility.js');
 
 
 module.exports.getContributors = async (event) => {
@@ -149,5 +150,38 @@ module.exports.getContributions = async () => {
       }),
     };
   }
+  return response;
+};
+
+
+module.exports.updateContributionStatus = async (event) => {
+  const [valid, message, body] = utility.checkBody(event.body, ['status', 'id']);
+  if (!valid) {
+    const response = {
+      status: 400,
+      body: JSON.stringify({
+        message,
+      }),
+    };
+    return response;
+  }
+
+  if (['Pending', 'Visible', 'Hidden'].indexOf(body.status) === -1) {
+    const response = {
+      status: 400,
+      body: JSON.stringify({
+        message: 'Invalid contributions status',
+      }),
+    };
+    return response;
+  }
+
+  const result = await databaseService.updateContributionStatus(body.status, body.id);
+  const response = {
+    status: 200,
+    body: JSON.stringify({
+      message: result,
+    }),
+  };
   return response;
 };

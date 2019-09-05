@@ -11,8 +11,9 @@
   "dependencies": {
     "@octokit/rest": "^16.28.7",
     "dynamodb-data-types": "^3.0.1",
-    "serverless-mysql": "^1.5.1",
-    "sqlstring": "^2.3.1"
+    "sqlstring": "^2.3.1",
+    "lodash": "^4.17.15",
+    "serverless-mysql": "^1.5.1"
   },
   "devDependencies": {
     "eslint": "^6.3.0",

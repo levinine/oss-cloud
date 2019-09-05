@@ -72,4 +72,10 @@ module.exports.addContributor = (contributor) => mysql.query('INSERT INTO contri
 
 module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributions');
 
-module.exports.getContributorPullRequests = (username) => mysql.query('SELECT * FROM contributions WHERE author=?', [username]);
+module.exports.getContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=?', [username]);
+
+
+module.exports.updateContributionStatus = (status, id) => mysql
+  .query('UPDATE contributions SET status=? WHERE id=?',
+    [status, id]);
