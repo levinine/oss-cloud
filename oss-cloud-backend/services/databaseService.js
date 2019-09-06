@@ -7,7 +7,6 @@ const mysql = require('serverless-mysql')({
     password: process.env.PASSWORD,
   },
 });
-const SqlString = require('sqlstring');
 
 module.exports.getContributor = (username) => mysql.query('SELECT * FROM contributors WHERE username=?', [username]);
 
