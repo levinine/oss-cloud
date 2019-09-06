@@ -2,7 +2,6 @@
   <v-card>
     <v-card-title>
       Contributors
-      <div class="flex-grow-1"></div>
       <v-text-field
         v-model="searchText"
         @click:append="updateSeachParam"

@@ -129,7 +129,7 @@ module.exports.updatePullRequests = async () => {
 
 module.exports.getContributions = async (event) => {
   const {
-    sortBy, sortDesc, page, itemsPerPage,
+    sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch, repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
   } = event.queryStringParameters;
   let response;
   try {
@@ -138,6 +138,13 @@ module.exports.getContributions = async (event) => {
       sortDesc: sortDesc === 'true',
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
+      searchText,
+      usernameSearch: usernameSearch === 'true',
+      repoSearch: repoSearch === 'true',
+      titleSearch: titleSearch === 'true',
+      dateFrom,
+      dateTo,
+      statusFilter,
     });
     response = {
       statusCode: 200,
