@@ -3,12 +3,17 @@
     <v-card-title>
       Contributions
       <div class="flex-grow-1"></div>
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+      <v-text-field append-icon="search" label="Search" single-line hide-details></v-text-field>
     </v-card-title>
     <v-data-table
       :headers="headers"
       :items="contributions"
-      :items-per-page="10"
+      :page.sync="page"
+      hide-default-footer
+      @page-count="pageCount = $event"
+      :options.sync="options"
+      :server-items-length="contributionsLength"
+      :loading="loading"
       item-key="link"
       class="elevation-1"
     >
@@ -73,22 +78,47 @@ import { updateContributionStatus } from "./../axiosService.js";
 export default {
   data() {
     return {
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 10,
+      contributionsLength: 0,
+      loading: false,
+      options: {},
       headers: [
         { text: "Username", align: "left", value: "author" },
         { text: "Date Created", value: "dateCreated" },
         { text: "Repository", value: "repo" },
         { text: "Title", value: "title" },
         { text: "Status", value: "status", align: "left" },
-        { text: "Actions", value: "actions", align: "center" },
-        { text: "Github", value: "link", align: "center" }
+        { text: "Actions", value: "actions", align: "center", sortable: false },
+        { text: "Github", value: "link", align: "center", sortable: false }
       ],
       contributions: []
     };
   },
+  watch: {
+    options: {
+      handler() {
+        this.loadContributions();
+      },
+      deep: true
+    }
+  },
   methods: {
     loadContributions() {
-      loadContributionsAxios().then(response => {
-        this.contributions = response.data;
+      this.loading = true;
+      let { sortBy, sortDesc, page, itemsPerPage } = this.options;
+      sortBy = sortBy[0];
+      sortDesc = sortDesc[0];
+      loadContributionsAxios({
+        sortBy,
+        sortDesc,
+        page,
+        itemsPerPage
+      }).then(response => {
+        this.contributions = response.data.contributions;
+        this.contributionsLength = response.data.contributionsLength;
+        this.loading = false;
       });
     },
     updateStatus(contribution, status) {
@@ -99,7 +129,7 @@ export default {
     }
   },
   mounted: function() {
-    this.loadContributions();
+    this.options.itemsPerPage = 15;
   }
 };
 </script>

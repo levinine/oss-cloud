@@ -7,7 +7,6 @@ const mysql = require('serverless-mysql')({
     password: process.env.PASSWORD,
   },
 });
-const SqlString = require('sqlstring');
 
 module.exports.getContributor = (username) => mysql.query('SELECT * FROM contributors WHERE username=?', [username]);
 
@@ -73,7 +72,22 @@ module.exports.addContributor = (contributor) => mysql
     ]]);
 
 
-module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributions');
+module.exports.getContributionsPaging = (params) => mysql
+  .transaction()
+  .query(
+    `SELECT * FROM contributions ORDER BY
+    ${params.sortBy === 'repo' ? `owner ${params.sortDesc ? 'DESC' : 'ASC'}, ` : ''}
+    ?? ${params.sortDesc ? 'DESC' : 'ASC'}
+    LIMIT ?,?`,
+    [
+      params.sortBy === undefined ? 'author' : params.sortBy,
+      (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
+  )
+  .query('SELECT COUNT(*) FROM contributions')
+  .rollback((e) => {
+    throw e;
+  })
+  .commit();
 
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
