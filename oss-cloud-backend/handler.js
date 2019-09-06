@@ -6,7 +6,7 @@ const utility = require('./services/utility.js');
 module.exports.getContributors = async (event) => {
   try {
     const {
-      sortBy, sortDesc, page, itemsPerPage, searchParam,
+      sortBy, sortDesc, page, itemsPerPage, searchParam, showHidden,
     } = event.queryStringParameters;
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
       sortBy,
@@ -14,6 +14,7 @@ module.exports.getContributors = async (event) => {
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
       searchParam,
+      showHidden: showHidden === 'true',
     });
     return {
       statusCode: 200,

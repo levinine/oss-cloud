@@ -1,49 +1,54 @@
 <template>
-  <v-card height="100%" style="overflow:auto">
-    <v-card-title>
-      Contributors
-      <div class="flex-grow-1"></div>
-      <v-text-field
-        v-model="searchText"
-        @click:append="updateSeachParam"
-        @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
-        append-icon="search"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
-    </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="contributors"
-      :page.sync="page"
-      hide-default-footer
-      @page-count="pageCount = $event"
-      :options.sync="options"
-      :server-items-length="contributorsLength"
-      :loading="loading"
-      :single-expand="singleExpand"
-      :expanded.sync="expanded"
-      item-key="username"
-      show-expand
-      class="elevation-2"
-    >
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length" class="grey lighten-4">
-          <ContributionsTable :username="item.username"></ContributionsTable>
-        </td>
-      </template>
+  <v-flex fill-height>
+    <v-card height="100%" width="100%" class="flexcard">
+      <v-card-title>
+        Contributors
+        <div class="flex-grow-1"></div>
+        <v-text-field
+          v-model="searchText"
+          @click:append="updateSeachParam"
+          @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
+          append-icon="search"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-card-text class="grow">
+        <v-data-table
+          :headers="headers"
+          :items="contributors"
+          :page.sync="page"
+          hide-default-footer
+          @page-count="pageCount = $event"
+          :options.sync="options"
+          :server-items-length="contributorsLength"
+          :loading="loading"
+          :single-expand="singleExpand"
+          :expanded.sync="expanded"
+          item-key="username"
+          show-expand
+          class="elevation-2"
+        >
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length" class="grey lighten-4">
+              <ContributionsTable :username="item.username"></ContributionsTable>
+            </td>
+          </template>
 
-      <template v-slot:item.link="{ item }">
-        <v-btn fab dark color="#24292e" :href="item.link" height="30" width="30" class="mr-5">
-          <v-icon dark>mdi-github-circle</v-icon>
-        </v-btn>
-      </template>
-    </v-data-table>
-    <div class="text-center pt-2">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
-    </div>
-  </v-card>
+          <template v-slot:item.link="{ item }">
+            <v-btn fab dark color="#24292e" :href="item.link" height="30" width="30" class="mr-5">
+              <v-icon dark>mdi-github-circle</v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-pagination class="text-center pt-2" v-model="page" :length="pageCount" align="bottom"></v-pagination>
+      </v-card-actions>
+    </v-card>
+  </v-flex>
 </template>
 
 <script>
@@ -114,7 +119,8 @@ export default {
         sortDesc,
         page,
         itemsPerPage,
-        searchParam: this.searchParam
+        searchParam: this.searchParam,
+        showHidden: false
       }).then(response => {
         this.contributors = response.data.contributors;
         this.contributorsLength = response.data.contributorsLength;
@@ -134,5 +140,9 @@ export default {
 <style scoped>
 .contributionsTable {
   margin: 0 25% 0 25%;
+}
+.flexcard {
+  display: flex;
+  flex-direction: column;
 }
 </style>

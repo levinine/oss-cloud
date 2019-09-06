@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <v-container fill-heigh>
-      <ContributorsTable></ContributorsTable>
-    </v-container>
-  </div>
+  <ContributorsTable></ContributorsTable>
 </template>
 
 <script>
