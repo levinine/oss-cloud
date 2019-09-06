@@ -21,10 +21,11 @@ export const loadContributorsAxios = options => {
   });
 };
 
-export const loadContributionsAxios = () => {
+export const loadContributionsAxios = options => {
   return axios({
     method: "get",
-    url: contributionsURL
+    url: contributionsURL,
+    params: options
   });
 };
 
