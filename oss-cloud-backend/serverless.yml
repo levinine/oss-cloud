@@ -47,4 +47,11 @@ functions:
       - http:
           path: contributionStatus
           method: post
+
+  contributorVisibleContributions:
+    handler: handler.getVisibleUserContributions
+    events:
+      - http:
+          path: contributorVisible
+          method: post
       

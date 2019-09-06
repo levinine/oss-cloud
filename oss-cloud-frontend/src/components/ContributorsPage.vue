@@ -1,6 +1,8 @@
 <template>
   <div>
-    <ContributorsTable></ContributorsTable>
+    <v-container fill-heigh>
+      <ContributorsTable></ContributorsTable>
+    </v-container>
   </div>
 </template>
 

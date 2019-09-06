@@ -1,16 +1,14 @@
 <template>
-  <v-card height="100%" style="overflow:auto">
-    <v-card-title>
-      Contributions
-      <div class="flex-grow-1"></div>
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
-    </v-card-title>
+  <v-card>
     <v-data-table
       :headers="headers"
       :items="contributions"
-      :items-per-page="10"
+      :items-per-page="5"
       item-key="link"
       class="elevation-1"
+      :page.sync="page"
+      hide-default-footer
+      @page-count="pageCount = $event"
     >
       <template v-slot:item.link="{ item }">
         <a :href="item.link">{{ item.link}}</a>
@@ -45,12 +43,6 @@
         </v-item-group>
       </template>
 
-      <template v-slot:item.status="{ item }" class="statusTd">
-        <div v-if="item.status=='Visible'" class="green--text">{{ item.status }}</div>
-        <div v-else-if="item.status=='Hidden'" class="red--text">{{ item.status }}</div>
-        <div v-else>{{ item.status }}</div>
-      </template>
-
       <template
         v-slot:item.dateCreated="{ item }"
       >{{ new Date(item.dateCreated).toJSON().slice(0,10) }}</template>
@@ -63,38 +55,35 @@
 
       <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
     </v-data-table>
+
+    <div class="text-center pt-2">
+      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+    </div>
   </v-card>
 </template>
 
 <script>
-import { loadContributionsAxios } from "./../axiosService.js";
-import { updateContributionStatus } from "./../axiosService.js";
+import { loadContributorVisibleContributions } from "./../axiosService.js";
 
 export default {
   data() {
     return {
       headers: [
-        { text: "Username", align: "left", value: "author" },
         { text: "Date Created", value: "dateCreated" },
         { text: "Repository", value: "repo" },
         { text: "Title", value: "title" },
-        { text: "Status", value: "status", align: "left" },
-        { text: "Actions", value: "actions", align: "center" },
         { text: "Github", value: "link", align: "center" }
       ],
-      contributions: []
+      contributions: [],
+      page: 1,
+      pageCount: 0
     };
   },
+  props: ["username"],
   methods: {
     loadContributions() {
-      loadContributionsAxios().then(response => {
+      loadContributorVisibleContributions(this.username).then(response => {
         this.contributions = response.data;
-      });
-    },
-    updateStatus(contribution, status) {
-      updateContributionStatus(status, contribution).then(response => {
-        console.log(response);
-        this.loadContributions();
       });
     }
   },

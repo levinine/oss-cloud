@@ -77,6 +77,9 @@ module.exports.getAllContributions = () => mysql.query('SELECT * FROM contributi
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
 
+module.exports.getVisibleContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=? AND status=?', [username, 'Visible']);
+
 // update status of contribution and update contributor's visible contribution count
 module.exports.updateContributionStatus = async (status, id, author) => {
   const [oldContribution] = await mysql.query('SELECT * FROM contributions WHERE id=?', [id]);

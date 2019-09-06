@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%" style="overflow:auto">
     <v-card-title>
       Contributors
       <div class="flex-grow-1"></div>
@@ -30,29 +30,14 @@
     >
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="grey lighten-4">
-          <v-card class="grey lighten-4">
-            <v-card-title>
-              Contributions table
-              <div class="flex-grow-1"></div>
-              <v-text-field
-                v-model="contributionsTable.search"
-                append-icon="search"
-                label="Search"
-                single-line
-                hide-details
-              ></v-text-field>
-            </v-card-title>
-            <v-data-table
-              class="grey lighten-4"
-              :headers="contributionsTable.headers"
-              :items="item.contributions"
-              :search="contributionsTable.search"
-            ></v-data-table>
-          </v-card>
+          <ContributionsTable :username="item.username"></ContributionsTable>
         </td>
       </template>
-      <template v-slot:item.username="{ item }">
-        <a :href="item.link">{{ item.username}}</a>
+
+      <template v-slot:item.link="{ item }">
+        <v-btn fab dark color="#24292e" :href="item.link" height="30" width="30" class="mr-5">
+          <v-icon dark>mdi-github-circle</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
     <div class="text-center pt-2">
@@ -63,8 +48,10 @@
 
 <script>
 import { loadContributorsAxios } from "./../axiosService.js";
+import ContributionsTable from "./ContributionsTable.vue";
 
 export default {
+  components: { ContributionsTable },
   data() {
     return {
       page: 1,
@@ -77,14 +64,15 @@ export default {
       singleExpand: true,
       expanded: [],
       headers: [
-        {
-          text: "Username",
-          align: "left",
-          value: "username"
-        },
+        { text: "Username", align: "left", value: "username" },
         { text: "First name", value: "firstName" },
         { text: "Last name", value: "lastName" },
-        { text: "Num. of contributions", value: "contributionCount" }
+        {
+          text: "Num. of contributions",
+          value: "visibleContributionCount",
+          align: "center"
+        },
+        { text: "GitHub", value: "link", align: "right" }
       ],
       contributors: [],
       contributionsTable: {

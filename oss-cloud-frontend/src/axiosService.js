@@ -4,6 +4,8 @@ const addContributorURL = "http://localhost:3000/addContributor";
 const getAllContributorsURL = "http://localhost:3000/contributors";
 const contributionsURL = "http://localhost:3000/contributions";
 const updateContributionStatusURL = "http://localhost:3000/contributionStatus";
+const loadContributorVisibleContributionsURL =
+  "http://localhost:3000/contributorVisible";
 
 export const addContributorAxios = contributor => {
   return axios({
@@ -35,6 +37,16 @@ export const updateContributionStatus = (status, contribution) => {
     data: {
       status,
       contribution
+    }
+  });
+};
+
+export const loadContributorVisibleContributions = username => {
+  return axios({
+    method: "post",
+    url: loadContributorVisibleContributionsURL,
+    data: {
+      username
     }
   });
 };
