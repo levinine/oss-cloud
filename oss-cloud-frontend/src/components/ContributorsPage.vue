@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <ContributorsTable></ContributorsTable>
-  </div>
+  <ContributorsTable></ContributorsTable>
 </template>
 
 <script>

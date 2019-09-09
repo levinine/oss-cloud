@@ -1,9 +1,12 @@
 import axios from "axios";
 
-const addContributorURL = "http://localhost:3000/addContributor";
-const getAllContributorsURL = "http://localhost:3000/contributors";
-const contributionsURL = "http://localhost:3000/contributions";
-const updateContributionStatusURL = "http://localhost:3000/contributionStatus";
+const baseURL = "http://localhost:3000";
+
+const addContributorURL = baseURL + "/addContributor";
+const getAllContributorsURL = baseURL + "/contributors";
+const contributionsURL = baseURL + "/contributions";
+const updateContributionStatusURL = baseURL + "/contributionStatus";
+const loadContributorVisibleContributionsURL = baseURL + "/contributorVisible";
 
 export const addContributorAxios = contributor => {
   return axios({
@@ -36,6 +39,16 @@ export const updateContributionStatus = (status, contribution) => {
     data: {
       status,
       contribution
+    }
+  });
+};
+
+export const loadContributorVisibleContributions = username => {
+  return axios({
+    method: "post",
+    url: loadContributorVisibleContributionsURL,
+    data: {
+      username
     }
   });
 };

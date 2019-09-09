@@ -31,8 +31,9 @@ module.exports.insertPullRequests = (pullRequests) => {
 module.exports.getContributorsPaging = (params) => mysql
   .transaction()
   .query(
-    `SELECT * FROM contributors WHERE INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
-    OR INSTR(lastName, ?) > 0 ORDER BY ??
+    `SELECT * FROM contributors WHERE ${params.showHidden ? '' : 'visibleContributionCount>0 AND '}
+    (INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
+    OR INSTR(lastName, ?)) > 0 ORDER BY ??
     ${params.sortDesc ? 'DESC' : 'ASC'}
      LIMIT ?,?`,
     [params.searchParam, params.searchParam, params.searchParam,
@@ -42,9 +43,7 @@ module.exports.getContributorsPaging = (params) => mysql
   .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
     OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
   [params.searchParam, params.searchParam, params.searchParam])
-  .rollback((e) => {
-    throw e;
-  })
+  .rollback(() => {})
   .commit();
 
 
@@ -71,25 +70,58 @@ module.exports.addContributor = (contributor) => mysql
     ]]);
 
 
-module.exports.getContributionsPaging = (params) => mysql
-  .transaction()
-  .query(
-    `SELECT * FROM contributions ORDER BY
+module.exports.getContributionsPaging = (params) => {
+  let searchTextPart = '';
+  let queryParams = [];
+  if (params.usernameSearch || params.repoSearch || params.titleSearch) {
+    if (params.usernameSearch) {
+      searchTextPart += 'INSTR(author, ?) > 0 OR ';
+      queryParams = queryParams.concat(params.searchText);
+    }
+    if (params.repoSearch) {
+      searchTextPart += '(INSTR(owner, ?) > 0 OR INSTR(repo, ?) > 0) OR ';
+      queryParams = queryParams.concat([params.searchText, params.searchText]);
+    }
+    if (params.titleSearch) {
+      searchTextPart += 'INSTR(title, ?) > 0 OR ';
+      queryParams = queryParams.concat(params.searchText);
+    }
+    searchTextPart = `(${searchTextPart.slice(0, -4)}) AND `;
+  }
+  let statusPart = '';
+  if (params.statusFilter !== 'All') {
+    statusPart = 'status = ? AND ';
+    queryParams = queryParams.concat([params.statusFilter]);
+  }
+  queryParams = queryParams.concat([params.dateFrom, params.dateTo,
+    params.sortBy === undefined ? 'author' : params.sortBy,
+    (params.page - 1) * params.itemsPerPage, params.itemsPerPage]);
+  return mysql
+    .transaction()
+    .query(
+      `SELECT * FROM contributions WHERE
+    ${searchTextPart}
+    ${statusPart}
+    dateCreated BETWEEN ? and ? 
+    ORDER BY
     ${params.sortBy === 'repo' ? `owner ${params.sortDesc ? 'DESC' : 'ASC'}, ` : ''}
     ?? ${params.sortDesc ? 'DESC' : 'ASC'}
     LIMIT ?,?`,
-    [
-      params.sortBy === undefined ? 'author' : params.sortBy,
-      (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
-  )
-  .query('SELECT COUNT(*) FROM contributions')
-  .rollback((e) => {
-    throw e;
-  })
-  .commit();
+      queryParams,
+    )
+    .query(`SELECT COUNT(*) FROM contributions WHERE
+    ${searchTextPart}
+    ${statusPart}
+    dateCreated BETWEEN ? and ?  `, queryParams.slice(0, queryParams.length - 3))
+    .rollback(() => {})
+    .commit();
+};
 
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
+
+module.exports.getVisibleContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=? AND status=?', [username, 'Visible']);
 
 // update status of contribution and update contributor's visible contribution count
 module.exports.updateContributionStatus = async (status, id, author) => {
@@ -107,6 +139,6 @@ module.exports.updateContributionStatus = async (status, id, author) => {
   return mysql.transaction()
     .query('UPDATE contributions SET status=? WHERE id=?', [status, id])
     .query(query, [author])
-    .rollback((e) => { throw e; })
+    .rollback(() => {})
     .commit();
 };
