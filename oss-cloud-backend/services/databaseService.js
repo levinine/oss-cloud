@@ -42,9 +42,7 @@ module.exports.getContributorsPaging = (params) => mysql
   .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
     OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
   [params.searchParam, params.searchParam, params.searchParam])
-  .rollback((e) => {
-    throw e;
-  })
+  .rollback(() => {})
   .commit();
 
 
@@ -97,15 +95,6 @@ module.exports.getContributionsPaging = (params) => {
   queryParams = queryParams.concat([params.dateFrom, params.dateTo,
     params.sortBy === undefined ? 'author' : params.sortBy,
     (params.page - 1) * params.itemsPerPage, params.itemsPerPage]);
-  console.log(params, searchTextPart);
-  console.log(`SELECT * FROM contributions WHERE
-  ${searchTextPart}
-  ${statusPart}
-  dateCreated BETWEEN ? and ? 
-  ORDER BY
-  ${params.sortBy === 'repo' ? `owner ${params.sortDesc ? 'DESC' : 'ASC'}, ` : ''}
-  ?? ${params.sortDesc ? 'DESC' : 'ASC'}
-  LIMIT ?,?`);
   return mysql
     .transaction()
     .query(
@@ -120,9 +109,7 @@ module.exports.getContributionsPaging = (params) => {
       queryParams,
     )
     .query('SELECT COUNT(*) FROM contributions')
-    .rollback((e) => {
-      throw e;
-    })
+    .rollback(() => {})
     .commit();
 };
 
@@ -145,6 +132,6 @@ module.exports.updateContributionStatus = async (status, id, author) => {
   return mysql.transaction()
     .query('UPDATE contributions SET status=? WHERE id=?', [status, id])
     .query(query, [author])
-    .rollback((e) => { throw e; })
+    .rollback(() => {})
     .commit();
 };
