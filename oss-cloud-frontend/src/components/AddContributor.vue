@@ -4,7 +4,7 @@
       <v-btn color="#1533a1" class="mt-10 mr-10" v-on="on">Add contributor</v-btn>
     </template>
     <v-card>
-      <v-form ref="addContributorForm">
+      <v-form ref="addContributorForm" v-model="valid" @submit="addContributor">
         <v-card-title>
           <span class="headline">Add contributor</span>
         </v-card-title>
@@ -41,6 +41,8 @@
               <v-alert
                 transition="scale-transition"
                 v-model="showAlert"
+                prominent
+                dense
                 :type="alertType"
                 :alertMessage="alertMessage"
               >{{alertMessage}}</v-alert>
@@ -50,7 +52,13 @@
         <v-card-actions>
           <div class="flex-grow-1"></div>
           <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-          <v-btn color="blue darken-1" text @click="addContributor">Add</v-btn>
+          <v-btn
+            color="blue darken-1"
+            type="submit"
+            text
+            :disabled="!valid"
+            @click="addContributor"
+          >Add</v-btn>
         </v-card-actions>
       </v-form>
     </v-card>
@@ -63,6 +71,7 @@ import { addContributorAxios } from "./../axiosService.js";
 export default {
   data() {
     return {
+      valid: true,
       showAlert: false,
       alertMessage: "",
       dialog: false,
@@ -77,18 +86,18 @@ export default {
   },
   methods: {
     addContributor() {
-      addContributorAxios(this.contributor).then(response => {
-        if (response.data.success) {
+      addContributorAxios(this.contributor)
+        .then(response => {
           this.alertMessage = response.data.message;
           this.alertType = "success";
           this.showAlert = true;
           this.$root.$emit("addedContributorEvent");
-        } else {
-          this.alertMessage = response.data.message;
+        })
+        .catch(error => {
+          this.alertMessage = error.response.data.message;
           this.alertType = "error";
           this.showAlert = true;
-        }
-      });
+        });
     }
   },
   watch: {

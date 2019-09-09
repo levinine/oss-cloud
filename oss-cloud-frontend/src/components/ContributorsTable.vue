@@ -2,16 +2,19 @@
   <v-flex fill-height>
     <v-card height="100%" width="100%" class="flexcard">
       <v-card-title>
-        Contributors
-        <v-text-field
-          v-model="searchText"
-          @click:append="updateSeachParam"
-          @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
-          append-icon="search"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
+        <v-row>
+          <v-col cols="3">
+            <v-text-field
+              v-model="searchText"
+              @click:append="updateSeachParam"
+              @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
+              append-icon="search"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-card-text class="grow">
         <v-data-table
