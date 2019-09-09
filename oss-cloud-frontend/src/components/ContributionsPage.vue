@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card height="100%" style="overflow:auto">
     <v-card-title>
       Contributions
       <v-spacer class="flex-grow-1"></v-spacer>
@@ -130,9 +130,6 @@
 
       <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
     </v-data-table>
-    <div class="text-center pt-2">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
-    </div>
   </v-card>
 </template>
 
@@ -228,9 +225,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.statusTd {
-  min-width: 7em;
-}
-</style>

@@ -6,7 +6,7 @@ const utility = require('./services/utility.js');
 module.exports.getContributors = async (event) => {
   try {
     const {
-      sortBy, sortDesc, page, itemsPerPage, searchParam,
+      sortBy, sortDesc, page, itemsPerPage, searchParam, showHidden,
     } = event.queryStringParameters;
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
       sortBy,
@@ -14,6 +14,7 @@ module.exports.getContributors = async (event) => {
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
       searchParam,
+      showHidden: showHidden === 'true',
     });
     return {
       statusCode: 200,
@@ -195,6 +196,47 @@ module.exports.updateContributionStatus = async (event) => {
     body: JSON.stringify({
       message: result,
     }),
+  };
+  return response;
+};
+
+
+// Returns all contributions of given contributor
+module.exports.getUserContributions = async (event) => {
+  const [valid, message, body] = utility.checkBody(event.body, ['username']);
+  if (!valid) {
+    return {
+      status: 400,
+      body: JSON.stringify({
+        message,
+      }),
+    };
+  }
+
+  const result = await databaseService.getContributorPullRequests(body.username);
+  const response = {
+    status: 200,
+    body: JSON.stringify(result),
+  };
+  return response;
+};
+
+// Returns visible contributions for single contributor
+module.exports.getVisibleUserContributions = async (event) => {
+  const [valid, message, body] = utility.checkBody(event.body, ['username']);
+  if (!valid) {
+    return {
+      status: 400,
+      body: JSON.stringify({
+        message,
+      }),
+    };
+  }
+
+  const result = await databaseService.getVisibleContributorPullRequests(body.username);
+  const response = {
+    status: 200,
+    body: JSON.stringify(result),
   };
   return response;
 };

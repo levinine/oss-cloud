@@ -31,8 +31,9 @@ module.exports.insertPullRequests = (pullRequests) => {
 module.exports.getContributorsPaging = (params) => mysql
   .transaction()
   .query(
-    `SELECT * FROM contributors WHERE INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
-    OR INSTR(lastName, ?) > 0 ORDER BY ??
+    `SELECT * FROM contributors WHERE ${params.showHidden ? '' : 'visibleContributionCount>0 AND '}
+    (INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
+    OR INSTR(lastName, ?)) > 0 ORDER BY ??
     ${params.sortDesc ? 'DESC' : 'ASC'}
      LIMIT ?,?`,
     [params.searchParam, params.searchParam, params.searchParam,
@@ -118,6 +119,9 @@ module.exports.getContributionsPaging = (params) => {
 
 module.exports.getContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=?', [username]);
+
+module.exports.getVisibleContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=? AND status=?', [username, 'Visible']);
 
 // update status of contribution and update contributor's visible contribution count
 module.exports.updateContributionStatus = async (status, id, author) => {
