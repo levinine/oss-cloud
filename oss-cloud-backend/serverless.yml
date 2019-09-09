@@ -3,10 +3,20 @@ service: oss-cloud-backend
 provider:
   name: aws
   runtime: nodejs10.x
+  stage: ${opt:stage, local}
+  environment: ${file(./config/${self:provider.stage}.yml)}
+    #GITHUB_ACCESS_TOKEN: ${file(./config/${self:provider.stage}.yml):GITHUB_ACCESS_TOKEN} 
+    #SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
+    #ENDPOINT: ${file(./config/${self:provider.stage}.yml):ENDPOINT}
+    #PORT: ${file(./config/${self:provider.stage}.yml):PORT}
+    #DATABASE: ${file(./config/${self:provider.stage}.yml):DATEBASE}
+    #USER: ${file(./config/${self:provider.stage}.yml):USER}
+    #PASSWORD: ${file(./config/${self:provider.stage}.yml):PASSWORD}
+
 
 plugins:
   - serverless-offline-scheduler
-  - serverless-dotenv-plugin # used to store github access token locally to keep it secret
+  #- serverless-dotenv-plugin
   - serverless-offline
 
 functions:
@@ -32,7 +42,7 @@ functions:
           path: updatePullRequests
           method: get
       - schedule:
-          rate: rate(${env:SCHEDULER_RATE})
+          rate: rate(${self:provider.environment.SCHEDULER_RATE})
 
   getContributions:
     handler: handler.getContributions

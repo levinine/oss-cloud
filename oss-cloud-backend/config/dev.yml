@@ -1,0 +1,7 @@
+GITHUB_ACCESS_TOKEN: 5de528d85aff9bba612c7e224641daaffed537c0
+SCHEDULER_RATE: '30 minutes'
+ENDPOINT: db-oss-cloud.catfkcltn5ww.eu-west-2.rds.amazonaws.com
+PORT: 3306
+DATABASE: oss-cloud
+USER: admin
+PASSWORD: Faak9tienguasheiwase

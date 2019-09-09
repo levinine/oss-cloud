@@ -15,7 +15,6 @@ CREATE TABLE `contributions` (
 
 
 CREATE TABLE `contributors` (
-CREATE TABLE `contributors` (
   `username` varchar(40) NOT NULL,
   `firstName` varchar(20) DEFAULT NULL,
   `lastName` varchar(20) DEFAULT NULL,
