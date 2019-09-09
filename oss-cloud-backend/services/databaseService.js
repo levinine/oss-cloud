@@ -108,7 +108,10 @@ module.exports.getContributionsPaging = (params) => {
     LIMIT ?,?`,
       queryParams,
     )
-    .query('SELECT COUNT(*) FROM contributions')
+    .query(`SELECT COUNT(*) FROM contributions WHERE
+    ${searchTextPart}
+    ${statusPart}
+    dateCreated BETWEEN ? and ?  `, queryParams.slice(0, queryParams.length - 3))
     .rollback(() => {})
     .commit();
 };
