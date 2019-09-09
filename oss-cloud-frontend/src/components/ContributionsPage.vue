@@ -1,71 +1,82 @@
 <template>
   <v-card>
     <v-card-title>
-      Contributions
-      <v-spacer class="flex-grow-1"></v-spacer>
-      <v-text-field
-        @keydown="$event.key==='Enter' ?  loadContributions(): null "
-        class="mx-4 flex-grow-1"
-        v-model="searchText"
-        append-icon="search"
-        label="Search"
-        single-line
-      ></v-text-field>
-      <v-radio-group class="mr-10" row>
-        <template v-slot:label>Apply search to:</template>
-        <v-checkbox v-model="usernameSearch" class="mx-1" label="Username"></v-checkbox>
-        <v-checkbox v-model="repoSearch" class="mx-1" label="Repository"></v-checkbox>
-        <v-checkbox v-model="titleSearch" class="mx-1" label="Title"></v-checkbox>
-      </v-radio-group>
-      <v-menu
-        v-model="menu1"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        full-width
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
+      <v-row>
+        <v-col cols="2">
           <v-text-field
-            class="mx-4"
-            v-model="dateFromFormatted"
-            label="Created after"
-            prepend-icon="event"
-            readonly
-            v-on="on"
+            @keydown="$event.key==='Enter' ?  loadContributions(): null "
+            class="mx-4 flex-grow-1"
+            v-model="searchText"
+            append-icon="search"
+            label="Search"
+            single-line
           ></v-text-field>
-        </template>
-        <v-date-picker @change="loadContributions" v-model="dateFrom" @input="menu1 = false"></v-date-picker>
-      </v-menu>
-      <v-menu
-        v-model="menu2"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        full-width
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
+        </v-col>
+        <v-col>
+          <v-radio-group row>
+            <template v-slot:label>Apply search to:</template>
+            <v-checkbox v-model="usernameSearch" class="mx-1" label="Username"></v-checkbox>
+            <v-checkbox v-model="repoSearch" class="mx-1" label="Repository"></v-checkbox>
+            <v-checkbox v-model="titleSearch" class="mx-1" label="Title"></v-checkbox>
+          </v-radio-group>
+        </v-col>
+        <v-col cols="2">
+          <v-menu
+            v-model="menu1"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                class="mr-4"
+                v-model="dateFromFormatted"
+                label="Created after"
+                prepend-icon="event"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker @change="loadContributions" v-model="dateFrom" @input="menu1 = false"></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="2">
+          <v-menu
+            v-model="menu2"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                class="mx-4"
+                v-model="dateToFormatted"
+                label="Created before"
+                prepend-icon="event"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker @change="loadContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            @change="loadContributions"
             class="mx-4"
-            v-model="dateToFormatted"
-            label="Created before"
-            prepend-icon="event"
-            readonly
-            v-on="on"
-          ></v-text-field>
-        </template>
-        <v-date-picker @change="loadContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
-      </v-menu>
-      <v-select
-        @change="loadContributions"
-        class="mx-4"
-        :items="['All', 'Pending', 'Visible', 'Hidden']"
-        label="Status"
-        v-model="statusFilter"
-      ></v-select>
+            :items="['All', 'Pending', 'Visible', 'Hidden']"
+            label="Status"
+            v-model="statusFilter"
+          ></v-select>
+        </v-col>
+      </v-row>
+      <v-spacer></v-spacer>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -131,7 +142,7 @@
       <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
     </v-data-table>
     <div class="text-center pt-2">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+      <v-pagination total-visible="7" v-model="page" :length="pageCount"></v-pagination>
     </div>
   </v-card>
 </template>

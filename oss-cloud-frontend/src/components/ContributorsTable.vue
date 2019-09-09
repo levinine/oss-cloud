@@ -1,16 +1,19 @@
 <template>
   <v-card>
     <v-card-title>
-      Contributors
-      <v-text-field
-        v-model="searchText"
-        @click:append="updateSeachParam"
-        @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
-        append-icon="search"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-row>
+        <v-col cols="3">
+          <v-text-field
+            v-model="searchText"
+            @click:append="updateSeachParam"
+            @keydown="$event.key==='Enter' ?  updateSeachParam(): null "
+            append-icon="search"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-col>
+      </v-row>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -55,7 +58,7 @@
       </template>
     </v-data-table>
     <div class="text-center pt-2">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+      <v-pagination total-visible="7" v-model="page" :length="pageCount"></v-pagination>
     </div>
   </v-card>
 </template>
