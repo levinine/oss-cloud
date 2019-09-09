@@ -140,7 +140,7 @@ export default {
     }
   },
   mounted: function() {
-    this.options.itemsPerPage = 15;
+    this.options.itemsPerPage = 13;
     this.$root.$on("addedContributorEvent", () => {
       this.loadContributors();
     });
