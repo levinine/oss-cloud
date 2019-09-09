@@ -3,7 +3,6 @@
     <v-card height="100%" width="100%" class="flexcard">
       <v-card-title>
         Contributors
-        <div class="flex-grow-1"></div>
         <v-text-field
           v-model="searchText"
           @click:append="updateSeachParam"
@@ -45,7 +44,16 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-pagination class="text-center pt-2" v-model="page" :length="pageCount" align="bottom"></v-pagination>
+        <v-pagination
+          class="text-center pt-2"
+          v-model="page"
+          :length="pageCount"
+          total-visible="7"
+          align="bottom"
+        ></v-pagination>
+        <v-label
+          class="float-right"
+        >{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributorsLength)}} of {{contributorsLength}}</v-label>
       </v-card-actions>
     </v-card>
   </v-flex>
