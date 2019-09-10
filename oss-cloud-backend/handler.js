@@ -10,7 +10,7 @@ module.exports.getContributors = async (event) => {
     } = event.queryStringParameters;
 
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
-      sortBy,
+      sortBy: typeof (sortBy) === 'string' ? sortBy : 'username',
       sortDesc: sortDesc === 'true',
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
@@ -109,7 +109,7 @@ module.exports.getContributions = async (event) => {
   let response;
   try {
     const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
-      sortBy,
+      sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
       sortDesc: sortDesc === 'true',
       page: parseInt(page, 10),
       itemsPerPage: parseInt(itemsPerPage, 10),
