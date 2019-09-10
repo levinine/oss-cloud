@@ -7,14 +7,14 @@ module.exports.getContributors = async (event) => {
   try {
     const {
       sortBy, sortDesc, page, itemsPerPage, searchParam, showHidden,
-    } = event.queryStringParameters;
+    } = event.queryStringParameters || {};
 
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
       sortBy: typeof (sortBy) === 'string' ? sortBy : 'username',
       sortDesc: sortDesc === 'true',
-      page: parseInt(page, 10),
-      itemsPerPage: parseInt(itemsPerPage, 10),
-      searchParam,
+      page: page ? parseInt(page, 10) : 1,
+      itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
+      searchParam: searchParam || '',
       showHidden: showHidden === 'true',
     });
 
@@ -104,22 +104,23 @@ module.exports.updatePullRequests = async () => {
 
 module.exports.getContributions = async (event) => {
   const {
-    sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch, repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
-  } = event.queryStringParameters;
+    sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch,
+    repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
+  } = event.queryStringParameters || {};
   let response;
   try {
     const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
       sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
       sortDesc: sortDesc === 'true',
-      page: parseInt(page, 10),
-      itemsPerPage: parseInt(itemsPerPage, 10),
-      searchText,
+      page: page ? parseInt(page, 10) : 1,
+      itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
+      searchText: searchText || '',
       usernameSearch: usernameSearch === 'true',
       repoSearch: repoSearch === 'true',
       titleSearch: titleSearch === 'true',
-      dateFrom,
-      dateTo,
-      statusFilter,
+      dateFrom: dateFrom || '2000-01-01',
+      dateTo: dateTo || '2030-01-01',
+      statusFilter: statusFilter || 'All',
     });
     response = utility.generateResponse(200, {
       contributions,
