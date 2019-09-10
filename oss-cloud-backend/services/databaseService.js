@@ -1,10 +1,10 @@
 const mysql = require('serverless-mysql')({
   config: {
-    host: process.env.ENDPOINT,
-    port: process.env.PORT,
-    database: process.env.DATABASE,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
+    host: process.env.MYSQL_ENDPOINT,
+    port: process.env.MYSQL_PORT,
+    database: process.env.MYSQL_DATABASE,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
   },
 });
 
@@ -39,9 +39,9 @@ module.exports.getContributorsPaging = (params) => mysql
     [params.searchParam, params.searchParam, params.searchParam,
       params.sortBy === undefined ? 'username' : params.sortBy,
       (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
-  )
-  .query(`SELECT COUNT(*) FROM contributors WHERE INSTR(username, ?) > 0 
-    OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
+  ) // add show hidden :)
+  .query(`SELECT COUNT(*) FROM contributors WHERE ${params.showHidden ? '' : 'visibleContributionCount>0 AND '}
+  INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
   [params.searchParam, params.searchParam, params.searchParam])
   .rollback(() => {})
   .commit();

@@ -132,11 +132,16 @@ export default {
         itemsPerPage,
         searchParam: this.searchParam,
         showHidden: false
-      }).then(response => {
-        this.contributors = response.data.contributors;
-        this.contributorsLength = response.data.contributorsLength;
-        this.loading = false;
-      });
+      })
+        .then(response => {
+          this.contributors = response.data.contributors;
+          this.contributorsLength = response.data.contributorsLength;
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log(e);
+          this.loading = false;
+        });
     }
   },
   mounted: function() {

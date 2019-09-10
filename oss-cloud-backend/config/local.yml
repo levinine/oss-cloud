@@ -5,8 +5,3 @@ PORT: 3306
 DATABASE: oss-cloud
 USER: admin
 PASSWORD: Faak9tienguasheiwase
-
-plugins:
-  - serverless-offline-scheduler
-  #- serverless-dotenv-plugin
-  - serverless-offline

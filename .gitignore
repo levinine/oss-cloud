@@ -26,3 +26,5 @@ jspm_packages
 
 #database
 .dynamodb
+oss-cloud-backend/config/local.yml
+oss-cloud-backend/config/dev.yml
