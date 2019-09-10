@@ -3,20 +3,12 @@ service: oss-cloud-backend
 provider:
   name: aws
   runtime: nodejs10.x
+  region: eu-west-2
   stage: ${opt:stage, local}
   environment: ${file(./config/${self:provider.stage}.yml)}
-    #GITHUB_ACCESS_TOKEN: ${file(./config/${self:provider.stage}.yml):GITHUB_ACCESS_TOKEN} 
-    #SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
-    #ENDPOINT: ${file(./config/${self:provider.stage}.yml):ENDPOINT}
-    #PORT: ${file(./config/${self:provider.stage}.yml):PORT}
-    #DATABASE: ${file(./config/${self:provider.stage}.yml):DATEBASE}
-    #USER: ${file(./config/${self:provider.stage}.yml):USER}
-    #PASSWORD: ${file(./config/${self:provider.stage}.yml):PASSWORD}
-
 
 plugins:
   - serverless-offline-scheduler
-  #- serverless-dotenv-plugin
   - serverless-offline
 
 functions:
@@ -26,6 +18,7 @@ functions:
       - http:
           path: addContributor
           method: post
+          cors: true
 
   getContributors:
     handler: handler.getContributors
@@ -33,14 +26,15 @@ functions:
       - http:
           path: contributors
           method: get
+          cors: true
 
   updatePullRequests:
     handler: handler.updatePullRequests
     events: # http event for testing, will probably change later
-      # TODO - add scheduling
       - http:
           path: updatePullRequests
           method: get
+          cors: true
       - schedule:
           rate: rate(${self:provider.environment.SCHEDULER_RATE})
 
@@ -50,6 +44,7 @@ functions:
       - http:
           path: contributions
           method: get
+          cors: true
   
   updateContributionStatus:
     handler: handler.updateContributionStatus
@@ -57,6 +52,7 @@ functions:
       - http:
           path: contributionStatus
           method: post
+          cors: true
 
   contributorVisibleContributions:
     handler: handler.getVisibleUserContributions
@@ -64,4 +60,5 @@ functions:
       - http:
           path: contributorVisible
           method: post
+          cors: true
       

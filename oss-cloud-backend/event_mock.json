@@ -1,0 +1,9 @@
+{
+    "queryStringParameters": {
+        "sortBy": "username",
+        "searchParam": "",
+        "itemsPerPage": 13,
+        "page": 1,
+        "showHidden": false
+    }
+}
