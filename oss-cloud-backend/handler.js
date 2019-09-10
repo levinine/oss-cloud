@@ -5,7 +5,6 @@ const utility = require('./services/utility.js');
 
 module.exports.getContributors = async (event) => {
   try {
-    console.log('Pre svega ikada');
     const {
       sortBy, sortDesc, page, itemsPerPage, searchParam, showHidden,
     } = event.queryStringParameters;
@@ -23,10 +22,6 @@ module.exports.getContributors = async (event) => {
       contributors,
       contributorsLength: contributorsLength['COUNT(*)'],
     });
-    // utility.generateResponse(200, {
-    // contributors,
-    // contributorsLength: contributorsLength['COUNT(*)'],
-    // });
   } catch (err) {
     console.log(err);
     return utility.generateResponse(500, {
