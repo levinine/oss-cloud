@@ -119,7 +119,7 @@ module.exports.getContributions = async (event) => {
       repoSearch: repoSearch === 'true',
       titleSearch: titleSearch === 'true',
       dateFrom: dateFrom || '2000-01-01',
-      dateTo: dateTo || '2030-01-01',
+      dateTo: dateTo || new Date(),
       statusFilter: statusFilter || 'All',
     });
     response = utility.generateResponse(200, {
