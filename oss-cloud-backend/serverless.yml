@@ -5,7 +5,14 @@ provider:
   runtime: nodejs10.x
   region: eu-west-2
   stage: ${opt:stage, local}
-  environment: ${file(./config/${self:provider.stage}.yml)}
+  environment: 
+    GITHUB_ACCESS_TOKEN: ${ssm:GITHUB_ACCESS_TOKEN}
+    MYSQL_ENDPOINT: ${ssm:MYSQL_ENDPOINT}
+    MYSQL_PORT: ${ssm:MYSQL_PORT}
+    MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
+    MYSQL_USER: ${ssm:MYSQL_USER}
+    MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
+    SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
 
 plugins:
   - serverless-offline-scheduler
