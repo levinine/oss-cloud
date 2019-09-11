@@ -140,6 +140,9 @@
           </template>
           <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
         </v-data-table>
+        <div class="my-3 mx-8 float-right">
+          <v-label>{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-pagination
@@ -149,9 +152,6 @@
           class="text-center pt-2 float-left"
           align="bottom"
         ></v-pagination>
-        <v-label
-          class="float-right"
-        >{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
       </v-card-actions>
     </v-card>
   </v-flex>
