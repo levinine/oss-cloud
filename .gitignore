@@ -23,6 +23,3 @@ jspm_packages
 .serverless
 /oss-cloud-backend/.env
 *.pem
-
-#database
-.dynamodb
