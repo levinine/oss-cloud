@@ -57,7 +57,6 @@
             type="submit"
             text
             :disabled="!valid"
-            @click="addContributor"
           >Add</v-btn>
         </v-card-actions>
       </v-form>

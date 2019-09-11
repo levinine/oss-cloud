@@ -3,11 +3,21 @@ service: oss-cloud-backend
 provider:
   name: aws
   runtime: nodejs10.x
+  region: eu-west-2
+  stage: ${opt:stage, local}
+  environment: 
+    GITHUB_ACCESS_TOKEN: ${ssm:GITHUB_ACCESS_TOKEN}
+    MYSQL_ENDPOINT: ${ssm:MYSQL_ENDPOINT}
+    MYSQL_PORT: ${ssm:MYSQL_PORT}
+    MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
+    MYSQL_USER: ${ssm:MYSQL_USER}
+    MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
+    SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
 
 plugins:
   - serverless-offline-scheduler
-  - serverless-dotenv-plugin # used to store github access token locally to keep it secret
   - serverless-offline
+  - serverless-dotenv-plugin
 
 functions:
   addContributor:
@@ -16,6 +26,7 @@ functions:
       - http:
           path: addContributor
           method: post
+          cors: true
 
   getContributors:
     handler: handler.getContributors
@@ -23,16 +34,17 @@ functions:
       - http:
           path: contributors
           method: get
+          cors: true
 
   updatePullRequests:
     handler: handler.updatePullRequests
     events: # http event for testing, will probably change later
-      # TODO - add scheduling
       - http:
           path: updatePullRequests
           method: get
+          cors: true
       - schedule:
-          rate: rate(${env:SCHEDULER_RATE})
+          rate: rate(${self:provider.environment.SCHEDULER_RATE})
 
   getContributions:
     handler: handler.getContributions
@@ -40,6 +52,7 @@ functions:
       - http:
           path: contributions
           method: get
+          cors: true
   
   updateContributionStatus:
     handler: handler.updateContributionStatus
@@ -47,6 +60,7 @@ functions:
       - http:
           path: contributionStatus
           method: post
+          cors: true
 
   contributorVisibleContributions:
     handler: handler.getVisibleUserContributions
@@ -54,4 +68,5 @@ functions:
       - http:
           path: contributorVisible
           method: post
+          cors: true
       

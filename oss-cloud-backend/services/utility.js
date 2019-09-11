@@ -13,3 +13,9 @@ module.exports.checkBody = (body, attributes) => {
     return [false, e.message, {}];
   }
 };
+
+module.exports.generateResponse = (status, body, stringify = true) => ({
+  statusCode: status,
+  headers: { 'Access-Control-Allow-Origin': '*' },
+  body: stringify ? JSON.stringify(body) : body,
+});
