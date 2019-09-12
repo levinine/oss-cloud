@@ -19,7 +19,7 @@ module.exports.schemas = {
         type: 'string',
       },
     },
-    required: ['fistName', 'lastName', 'username'],
+    required: ['firstName', 'lastName', 'username'],
   },
 
   contributionStatus: {
