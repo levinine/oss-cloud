@@ -5,9 +5,13 @@ const utility = require('./services/utility.js');
 
 module.exports.getContributors = async (event) => {
   try {
+    const [valid, message, params] = utility.validateObject(event.queryStringParameters, 'contributors');
+    if (!valid) {
+      return utility.generateResponse(400, { message });
+    }
     const {
       sortBy, sortDesc, page, itemsPerPage, searchParam, showHidden,
-    } = event.queryStringParameters || {};
+    } = params;
 
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
       sortBy: typeof (sortBy) === 'string' ? sortBy : 'username',
@@ -39,8 +43,7 @@ module.exports.getContributors = async (event) => {
 //    lastName: string
 // }
 module.exports.addContributor = async (event) => {
-  // check if request is valid
-  const [valid, message, body] = utility.checkBody(event.body, ['username', 'firstName', 'lastName']);
+  const [valid, message, body] = utility.validateJSON(event.body, 'addContributor');
   if (!valid) {
     return utility.generateResponse(400, { message });
   }
@@ -110,10 +113,14 @@ module.exports.updateNextContributor = async () => {
 };
 
 module.exports.getContributions = async (event) => {
+  const [valid, message, params] = utility.validateObject(event.queryStringParameters, 'contributions');
+  if (!valid) {
+    return utility.generateResponse(400, { message });
+  }
   const {
     sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch,
     repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
-  } = event.queryStringParameters || {};
+  } = params;
   let response;
   try {
     const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
@@ -144,7 +151,7 @@ module.exports.getContributions = async (event) => {
 
 // updates the status of a contribution (Pending, Visible, Hidden)
 module.exports.updateContributionStatus = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['status', 'contribution']);
+  const [valid, message, body] = utility.validateJSON(event.body, 'contributionStatus');
   if (!valid) {
     return utility.generateResponse(400, { message });
   }
@@ -161,7 +168,7 @@ module.exports.updateContributionStatus = async (event) => {
 
 // Returns all contributions of given contributor
 module.exports.getUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
+  const [valid, message, body] = utility.validateJSON(event.body, ['userContributions']);
   if (!valid) {
     return utility.generateResponse(400, { message });
   }
@@ -172,7 +179,7 @@ module.exports.getUserContributions = async (event) => {
 
 // Returns visible contributions for single contributor
 module.exports.getVisibleUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
+  const [valid, message, body] = utility.validateJSON(event.body, 'userContributions');
   if (!valid) {
     return utility.generateResponse(400, { message });
   }

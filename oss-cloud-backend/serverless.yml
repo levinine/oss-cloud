@@ -62,9 +62,9 @@ functions:
           method: post
           cors: true
   
-  updateNextContributor:
-    handler: handler.updateNextContributor
-    events:
-      - schedule:
-          rate: rate(${self:provider.environment.SCHEDULER_RATE})
+  # updateNextContributor:
+    # handler: handler.updateNextContributor
+    # events:
+      # - schedule:
+          # rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
