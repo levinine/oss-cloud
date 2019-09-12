@@ -94,7 +94,7 @@ module.exports.schemas = {
     },
   },
 
-  constributions: {
+  contributions: {
     $id: 'uC',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Contributions',
