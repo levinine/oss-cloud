@@ -15,7 +15,7 @@ module.exports.getContributors = async (event) => {
       page: page ? parseInt(page, 10) : 1,
       itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
       searchParam: searchParam || '',
-      showHidden: showHidden === 'true',
+      showHidden: showHidden === 'true', // can be later changed to show hidden only if admin invoked this lambda
     });
 
     return utility.generateResponse(200, {
@@ -105,34 +105,27 @@ module.exports.updatePullRequests = async () => {
 module.exports.getContributions = async (event) => {
   const {
     sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch,
-    repoSearch, titleSearch, dateFrom, dateTo, statusFilter, username,
+    repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
   } = event.queryStringParameters || {};
   let response;
   try {
-    if (username !== undefined) {
-      const contributions = await databaseService.getVisibleContributorPullRequests(username);
-      response = utility.generateResponse(200, {
-        contributions,
-      });
-    } else {
-      const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
-        sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
-        sortDesc: sortDesc === 'true',
-        page: page ? parseInt(page, 10) : 1,
-        itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
-        searchText: searchText || '',
-        usernameSearch: usernameSearch === 'true',
-        repoSearch: repoSearch === 'true',
-        titleSearch: titleSearch === 'true',
-        dateFrom: dateFrom || '2000-01-01',
-        dateTo: dateTo || new Date(),
-        statusFilter: statusFilter || 'All',
-      });
-      response = utility.generateResponse(200, {
-        contributions,
-        contributionsLength: contributionsLength['COUNT(*)'],
-      });
-    }
+    const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
+      sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
+      sortDesc: sortDesc === 'true',
+      page: page ? parseInt(page, 10) : 1,
+      itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
+      searchText: searchText || '',
+      usernameSearch: usernameSearch === 'true',
+      repoSearch: repoSearch === 'true',
+      titleSearch: titleSearch === 'true',
+      dateFrom: dateFrom || '2000-01-01',
+      dateTo: dateTo || new Date(),
+      statusFilter: statusFilter || 'All',
+    });
+    response = utility.generateResponse(200, {
+      contributions,
+      contributionsLength: contributionsLength['COUNT(*)'],
+    });
   } catch (error) {
     console.log('error in getContributions handler');
     response = utility.generateResponse(500, {
@@ -142,6 +135,17 @@ module.exports.getContributions = async (event) => {
   return response;
 };
 
+
+// Returns visible contributions for single contributor
+// Can be merged with getContributions into a single lambda, but getContributors
+// part of that new lambda should be invokable only by admin
+module.exports.getVisibleUserContributions = async (event) => {
+  const {
+    username,
+  } = event.queryStringParameters || {};
+  const result = await databaseService.getVisibleContributorPullRequests(username);
+  return utility.generateResponse(200, result);
+};
 
 module.exports.updateContributionStatus = async (event) => {
   const [valid, message, body] = utility.checkBody(event.body, ['status', 'contribution']);

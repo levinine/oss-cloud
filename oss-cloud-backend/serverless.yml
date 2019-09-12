@@ -13,6 +13,9 @@ provider:
     MYSQL_USER: ${ssm:MYSQL_USER}
     MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
+    AUTH_REGION: ${ssm:AUTH_REGION}
+    AUTH_AWS_ACCOUNT_ID: ${ssm:AUTH_AWS_ACCOUNT_ID}
+    AUTH_USER_POOL_ID: ${ssm:AUTH_USER_POOL_ID}
 
 plugins:
   - serverless-offline-scheduler
@@ -27,6 +30,7 @@ functions:
           path: addContributor
           method: post
           cors: true
+
 
   getContributors:
     handler: handler.getContributors
@@ -53,7 +57,18 @@ functions:
           path: contributions
           method: get
           cors: true
-  
+          authorizer:
+            arn: arn:aws:cognito-idp:${self:provider.environment.AUTH_REGION}:${self:provider.environment.AUTH_AWS_ACCOUNT_ID}:userpool/${self:provider.environment.AUTH_USER_POOL_ID}
+
+  contributorVisibleContributions:
+    handler: handler.getVisibleUserContributions
+    events:
+      - http:
+          path: contributorVisible
+          method: post
+          cors: true
+      
+            
   updateContributionStatus:
     handler: handler.updateContributionStatus
     events:
@@ -61,3 +76,5 @@ functions:
           path: contributionStatus
           method: post
           cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:${self:provider.environment.AUTH_REGION}:${self:provider.environment.AUTH_AWS_ACCOUNT_ID}:userpool/${self:provider.environment.AUTH_USER_POOL_ID}
