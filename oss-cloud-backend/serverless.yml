@@ -19,7 +19,7 @@ provider:
 
 plugins:
   - serverless-offline-scheduler
-  - serverless-dotenv-plugin
+  - serverless-offline-dotenv
   - serverless-offline
 
 functions:

@@ -45,7 +45,7 @@
           </template>
         </v-data-table>
         <div class="my-3 mx-8 float-right">
-          <v-label>{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributorsLength)}} of {{contributorsLength}}</v-label>
+          <v-label>{{Math.min(this.options.itemsPerPage*(page-1) + 1,contributorsLength||0)}}-{{Math.min(this.options.itemsPerPage*page, contributorsLength)}} of {{contributorsLength}}</v-label>
         </div>
       </v-card-text>
 
