@@ -14,7 +14,6 @@ const databaseService = require('./databaseService.js');
 // aquires a fresh installation access token
 // replaces octokit with new instance using that token
 const refreshInstallationToken = async () => {
-  console.log('KEYS', process.env.GITHUB_APP_ID, process.env.GITHUB_APP_PRIVATE_KEY);
   const jwt = app.getSignedJsonWebToken();
   const { data } = await request('GET /users/:user/installation', {
     user: process.env.GITHUB_INSTALL_USER,
@@ -53,6 +52,7 @@ const getRepo = async (owner, repo) => octokit.repos
   })
   .then(({ data }) => data);
 
+// returns all fork repos of a single user
 const getForkedRepos = async (username) => octokit.search
   .repos({ q: `user:${username}+fork:only` })
   .then((response) => response.data.items);

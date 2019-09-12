@@ -65,10 +65,6 @@ functions:
   updateNextContributor:
     handler: handler.updateNextContributor
     events:
-      - http:
-          path: updateNext
-          method: get
-          cors: true
-      # - schedule:
-      #     rate: rate(${self:provider.environment.SCHEDULER_RATE})
+      - schedule:
+          rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
