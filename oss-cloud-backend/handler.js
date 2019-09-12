@@ -105,27 +105,34 @@ module.exports.updatePullRequests = async () => {
 module.exports.getContributions = async (event) => {
   const {
     sortBy, sortDesc, page, itemsPerPage, searchText, usernameSearch,
-    repoSearch, titleSearch, dateFrom, dateTo, statusFilter,
+    repoSearch, titleSearch, dateFrom, dateTo, statusFilter, username,
   } = event.queryStringParameters || {};
   let response;
   try {
-    const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
-      sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
-      sortDesc: sortDesc === 'true',
-      page: page ? parseInt(page, 10) : 1,
-      itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
-      searchText: searchText || '',
-      usernameSearch: usernameSearch === 'true',
-      repoSearch: repoSearch === 'true',
-      titleSearch: titleSearch === 'true',
-      dateFrom: dateFrom || '2000-01-01',
-      dateTo: dateTo || new Date(),
-      statusFilter: statusFilter || 'All',
-    });
-    response = utility.generateResponse(200, {
-      contributions,
-      contributionsLength: contributionsLength['COUNT(*)'],
-    });
+    if (username !== undefined) {
+      const contributions = await databaseService.getVisibleContributorPullRequests(username);
+      response = utility.generateResponse(200, {
+        contributions,
+      });
+    } else {
+      const [contributions, [contributionsLength]] = await databaseService.getContributionsPaging({
+        sortBy: typeof (sortBy) === 'string' ? sortBy : 'author',
+        sortDesc: sortDesc === 'true',
+        page: page ? parseInt(page, 10) : 1,
+        itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
+        searchText: searchText || '',
+        usernameSearch: usernameSearch === 'true',
+        repoSearch: repoSearch === 'true',
+        titleSearch: titleSearch === 'true',
+        dateFrom: dateFrom || '2000-01-01',
+        dateTo: dateTo || new Date(),
+        statusFilter: statusFilter || 'All',
+      });
+      response = utility.generateResponse(200, {
+        contributions,
+        contributionsLength: contributionsLength['COUNT(*)'],
+      });
+    }
   } catch (error) {
     console.log('error in getContributions handler');
     response = utility.generateResponse(500, {
@@ -149,27 +156,4 @@ module.exports.updateContributionStatus = async (event) => {
   const result = await databaseService.updateContributionStatus(body.status,
     body.contribution.id, body.contribution.author);
   return utility.generateResponse(200, { message: result });
-};
-
-
-// Returns all contributions of given contributor
-module.exports.getUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
-  if (!valid) {
-    return utility.generateResponse(400, { message });
-  }
-
-  const result = await databaseService.getContributorPullRequests(body.username);
-  return utility.generateResponse(200, result);
-};
-
-// Returns visible contributions for single contributor
-module.exports.getVisibleUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
-  if (!valid) {
-    return utility.generateResponse(400, { message });
-  }
-
-  const result = await databaseService.getVisibleContributorPullRequests(body.username);
-  return utility.generateResponse(200, result);
 };

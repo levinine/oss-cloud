@@ -61,12 +61,3 @@ functions:
           path: contributionStatus
           method: post
           cors: true
-
-  contributorVisibleContributions:
-    handler: handler.getVisibleUserContributions
-    events:
-      - http:
-          path: contributorVisible
-          method: post
-          cors: true
-      
