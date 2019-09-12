@@ -1,11 +1,11 @@
 const Octokit = require('@octokit/rest');
-const OctokitApp = require('@octokit/app');
-const octokitRequest = require('@octokit/request');
+const { App } = require('@octokit/app');
+const { request } = require('@octokit/request');
 // github api library
 let octokit;
-const app = new OctokitApp({
+const app = new App({
   id: process.env.GITHUB_APP_ID,
-  privateKey: process.env.GITHUB_PRIVATE_KEY,
+  privateKey: process.env.GITHUB_APP_PRIVATE_KEY,
 });
 
 const _ = require('lodash');
@@ -14,8 +14,9 @@ const databaseService = require('./databaseService.js');
 // aquires a fresh installation access token
 // replaces octokit with new instance using that token
 const refreshInstallationToken = async () => {
+  console.log('KEYS', process.env.GITHUB_APP_ID, process.env.GITHUB_APP_PRIVATE_KEY);
   const jwt = app.getSignedJsonWebToken();
-  const { data } = await octokitRequest('GET /users/:user/installation', {
+  const { data } = await request('GET /users/:user/installation', {
     user: process.env.GITHUB_INSTALL_USER,
     headers: {
       authorization: `Bearer ${jwt}`,

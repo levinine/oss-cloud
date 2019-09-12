@@ -146,17 +146,13 @@ module.exports.updateContributionStatus = async (status, id, author) => {
 
 module.exports.nextContributor = async () => {
   const [nextNew] = await mysql.query('SELECT * FROM contributors WHERE updated=? LIMIT 1', ['NO']);
-  console.log('nextNew', nextNew);
   if (nextNew) {
     return nextNew;
   }
   const [lastUpdatedRow] = await mysql.query('SELECT lastUpdated FROM lastUpdated WHERE id=1');
-  console.log('lastUpdatedId', lastUpdatedRow);
   let [nextToUpdate] = await mysql.query('SELECT * FROM contributors WHERE id>? LIMIT 1', [lastUpdatedRow.lastUpdated]);
-  console.log('nextToUpdate', nextToUpdate);
   if (!nextToUpdate) {
     [nextToUpdate] = await mysql.query('SELECT * FROM contributors WHERE id>0 LIMIT 1');
-    console.log('nextToUpdate', nextToUpdate);
   }
   await mysql.query('UPDATE lastUpdated SET lastUpdated=? WHERE id=1', [nextToUpdate.id]);
   return nextToUpdate;

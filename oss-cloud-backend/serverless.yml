@@ -6,7 +6,6 @@ provider:
   region: eu-west-2
   stage: ${opt:stage, local}
   environment: 
-    GITHUB_ACCESS_TOKEN: ${ssm:GITHUB_ACCESS_TOKEN}
     MYSQL_ENDPOINT: ${ssm:MYSQL_ENDPOINT}
     MYSQL_PORT: ${ssm:MYSQL_PORT}
     MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
@@ -70,6 +69,6 @@ functions:
           path: updateNext
           method: get
           cors: true
-      - schedule:
-          rate: rate(${self:provider.environment.SCHEDULER_RATE})
+      # - schedule:
+      #     rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
