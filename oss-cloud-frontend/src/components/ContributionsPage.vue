@@ -13,14 +13,13 @@
               single-line
             ></v-text-field>
           </v-col>
-          <v-col>
-            <v-radio-group row>
-              <template v-slot:label>Apply search to:</template>
-              <v-checkbox v-model="usernameSearch" class="mx-1" label="Username"></v-checkbox>
-              <v-checkbox v-model="repoSearch" class="mx-1" label="Repository"></v-checkbox>
-              <v-checkbox v-model="titleSearch" class="mx-1" label="Title"></v-checkbox>
-            </v-radio-group>
-          </v-col>
+          <v-radio-group row>
+            <template v-slot:label>Apply search to:</template>
+            <v-checkbox v-model="usernameSearch" class="mx-1" label="Username"></v-checkbox>
+            <v-checkbox v-model="repoSearch" class="mx-1" label="Repository"></v-checkbox>
+            <v-checkbox v-model="titleSearch" class="mx-1" label="Title"></v-checkbox>
+          </v-radio-group>
+          <v-spacer></v-spacer>
           <v-col cols="2">
             <v-menu
               v-model="menu1"
@@ -33,7 +32,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  class="mr-4"
+                  class="mx-4"
                   v-model="dateFromFormatted"
                   label="Created after"
                   prepend-icon="event"
@@ -67,7 +66,7 @@
               <v-date-picker @change="loadContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
             </v-menu>
           </v-col>
-          <v-col cols="2">
+          <v-col cols="1">
             <v-select
               @change="loadContributions"
               class="mx-4"
@@ -141,6 +140,9 @@
           </template>
           <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
         </v-data-table>
+        <div class="my-3 mx-8 float-right">
+          <v-label>{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-pagination
@@ -150,9 +152,6 @@
           class="text-center pt-2 float-left"
           align="bottom"
         ></v-pagination>
-        <v-label
-          class="float-right"
-        >{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
       </v-card-actions>
     </v-card>
   </v-flex>

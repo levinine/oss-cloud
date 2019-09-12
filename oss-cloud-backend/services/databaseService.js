@@ -33,15 +33,15 @@ module.exports.getContributorsPaging = (params) => mysql
   .query(
     `SELECT * FROM contributors WHERE ${params.showHidden ? '' : 'visibleContributionCount>0 AND '}
     (INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0 
-    OR INSTR(lastName, ?)) > 0 ORDER BY ??
+    OR INSTR(lastName, ?) > 0) ORDER BY ??
     ${params.sortDesc ? 'DESC' : 'ASC'}
      LIMIT ?,?`,
     [params.searchParam, params.searchParam, params.searchParam,
       params.sortBy === undefined ? 'username' : params.sortBy,
       (params.page - 1) * params.itemsPerPage, params.itemsPerPage],
-  ) // add show hidden :)
+  )
   .query(`SELECT COUNT(*) FROM contributors WHERE ${params.showHidden ? '' : 'visibleContributionCount>0 AND '}
-  INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0 `,
+  (INSTR(username, ?) > 0 OR INSTR(firstName, ?) > 0  OR INSTR(lastName, ?) > 0) `,
   [params.searchParam, params.searchParam, params.searchParam])
   .rollback(() => {})
   .commit();
