@@ -16,8 +16,8 @@ provider:
 
 plugins:
   - serverless-offline-scheduler
+  - serverless-offline-dotenv
   - serverless-offline
-  - serverless-dotenv-plugin
 
 functions:
   addContributor:

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Auth } from "aws-amplify";
 
 // const baseURL = "http://localhost:3000";
 const baseURL = "https://jhvejstuuc.execute-api.eu-west-2.amazonaws.com/aws";
@@ -8,6 +9,24 @@ const getAllContributorsURL = baseURL + "/contributors";
 const contributionsURL = baseURL + "/contributions";
 const updateContributionStatusURL = baseURL + "/contributionStatus";
 const loadContributorVisibleContributionsURL = baseURL + "/contributorVisible";
+
+axios.interceptors.request.use(
+  async function(config) {
+    let token;
+    try {
+      const session = await Auth.currentSession();
+      token = session.idToken;
+    } catch (e) {
+      token = undefined;
+    }
+    if (token != undefined)
+      config.headers["Authorization"] = `Bearer ${token.jwtToken}`;
+    return config;
+  },
+  function(error) {
+    return Promise.reject(error);
+  }
+);
 
 export const addContributorAxios = contributor => {
   return axios({

@@ -141,7 +141,7 @@
           <template v-slot:item.repo="{ item }">{{ `${item.owner}/${item.repo}` }}</template>
         </v-data-table>
         <div class="my-3 mx-8 float-right">
-          <v-label>{{this.options.itemsPerPage*(page-1) + 1}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
+          <v-label>{{Math.min(this.options.itemsPerPage*(page-1) + 1,contributionsLength||0)}}-{{Math.min(this.options.itemsPerPage*page, contributionsLength)}} of {{contributionsLength}}</v-label>
         </div>
       </v-card-text>
       <v-card-actions>
@@ -230,11 +230,16 @@ export default {
         dateFrom: this.dateFrom,
         dateTo: this.dateTo,
         statusFilter: this.statusFilter
-      }).then(response => {
-        this.contributions = response.data.contributions;
-        this.contributionsLength = response.data.contributionsLength;
-        this.loading = false;
-      });
+      })
+        .then(response => {
+          this.contributions = response.data.contributions;
+          this.contributionsLength = response.data.contributionsLength;
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log(e);
+          this.loading = false;
+        });
     },
     updateStatus(contribution, status) {
       updateContributionStatus(status, contribution).then(response => {
