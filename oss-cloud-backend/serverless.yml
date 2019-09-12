@@ -9,6 +9,7 @@ provider:
 
 plugins:
   - serverless-offline-scheduler
+  - serverless-dotenv-plugin
   - serverless-offline
 
 functions:
@@ -60,5 +61,13 @@ functions:
       - http:
           path: contributorVisible
           method: post
+          cors: true
+  
+  updateNextContributor:
+    handler: handler.updateNextContributor
+    events:
+      - http:
+          path: updateNext
+          method: get
           cors: true
       

@@ -1,7 +1,7 @@
-GITHUB_ACCESS_TOKEN: ****************************************
+GITHUB_ACCESS_TOKEN: 38b19e48a4304fef6ec5f0e25fb23237fe38fc68
 SCHEDULER_RATE: '30 minutes'
 MYSQL_ENDPOINT: db-oss-cloud.catfkcltn5ww.eu-west-2.rds.amazonaws.com
 MYSQL_PORT: 3306
 MYSQL_DATABASE: oss-cloud
 MYSQL_USER: admin
-MYSQL_PASSWORD: ********************
+MYSQL_PASSWORD: Shaikahmii5AiC1ohx5s

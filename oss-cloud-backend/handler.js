@@ -71,8 +71,6 @@ module.exports.addContributor = async (event) => {
       visibleContributionCount: 0,
     });
 
-    gitHubApiService.getContributorPullRequests(body.username)
-      .catch((err) => { console.log(err); });
     return utility.generateResponse(201, {
       message: 'Successfully added contributor',
       success: true,
@@ -96,15 +94,39 @@ module.exports.updatePullRequests = async () => {
   let response;
   try {
     const results = await gitHubApiService.updatePullRequests();
-    response = utility.generatesReponse(200, `${results} contributors updated`, false);
+    response = utility.generateResponse(200, `${results} contributors updated`, false);
   } catch (error) {
     console.log('error in getPullRequests handler: ', error);
-    response = utility.generatesReponse(500, {
+    response = utility.generateResponse(500, {
       message: error.message,
       success: false,
     });
   }
   return response;
+};
+
+module.exports.updateNextContributor = async () => {
+  try {
+    const nextToUpdate = await databaseService.nextContributor();
+    console.log('Next to update', nextToUpdate);
+    const results = await gitHubApiService.getContributorPullRequests(nextToUpdate.username);
+    console.log('updated');
+    if (nextToUpdate.updated === 'NO') {
+      console.log('setting status of user with id', nextToUpdate.id);
+      await databaseService.setContributorUpdated(nextToUpdate.id, 'YES');
+    }
+    console.log('returning');
+    return utility.generateResponse(201, {
+      message: 'Successfully updated contributor',
+      success: true,
+      body: JSON.stringify(results),
+    });
+  } catch (error) {
+    return utility.generateResponse(500, {
+      message: error.message,
+      success: false,
+    });
+  }
 };
 
 module.exports.getContributions = async (event) => {
