@@ -80,37 +80,17 @@ module.exports.addContributor = async (event) => {
   }
 };
 
-// returns all pull requests from parents of all forked repos for a single github user
-// POST expected json
-// {
-//    username: string
-// }
-module.exports.updatePullRequests = async () => {
-  let response;
-  try {
-    const results = await gitHubApiService.updatePullRequests();
-    response = utility.generateResponse(200, `${results} contributors updated`, false);
-  } catch (error) {
-    console.log('error in getPullRequests handler: ', error);
-    response = utility.generateResponse(500, {
-      message: error.message,
-      success: false,
-    });
-  }
-  return response;
-};
-
+// updates pull requests for the next contributor
+// next contributor is chosen:
+//   top priority - a contributor that was recently added and not yet updated
+//   if all contributors were updated at least once, a round robbin principle is applied
 module.exports.updateNextContributor = async () => {
   try {
     const nextToUpdate = await databaseService.nextContributor();
-    console.log('Next to update', nextToUpdate);
     const results = await gitHubApiService.getContributorPullRequests(nextToUpdate.username);
-    console.log('updated');
     if (nextToUpdate.updated === 'NO') {
-      console.log('setting status of user with id', nextToUpdate.id);
       await databaseService.setContributorUpdated(nextToUpdate.id, 'YES');
     }
-    console.log('returning');
     return utility.generateResponse(201, {
       message: 'Successfully updated contributor',
       success: true,

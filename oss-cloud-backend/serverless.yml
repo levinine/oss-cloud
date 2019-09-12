@@ -12,13 +12,15 @@ provider:
     MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
     MYSQL_USER: ${ssm:MYSQL_USER}
     MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
+    GITHUB_APP_ID: ${ssm:GITHUB_APP_ID}
+    GITHUB_APP_PRIVATE_KEY: ${ssm:GITHUB_APP_PRIVATE_KEY}
+    GITHUB_INSTALL_USER: ${ssm:GITHUB_INSTALL_USER} # username of a user that installed the app
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
 
 plugins:
   - serverless-offline-scheduler
   - serverless-dotenv-plugin
   - serverless-offline
-  - serverless-dotenv-plugin
 
 functions:
   addContributor:
@@ -36,16 +38,6 @@ functions:
           path: contributors
           method: get
           cors: true
-
-  updatePullRequests:
-    handler: handler.updatePullRequests
-    events: # http event for testing, will probably change later
-      - http:
-          path: updatePullRequests
-          method: get
-          cors: true
-      - schedule:
-          rate: rate(${self:provider.environment.SCHEDULER_RATE})
 
   getContributions:
     handler: handler.getContributions
@@ -78,4 +70,6 @@ functions:
           path: updateNext
           method: get
           cors: true
+      - schedule:
+          rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
