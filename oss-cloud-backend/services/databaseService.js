@@ -139,3 +139,26 @@ module.exports.updateContributionStatus = async (status, id, author) => {
     .rollback(() => {})
     .commit();
 };
+
+// returns the next contributor for the purpose of updating their pull requests
+// priority goes to contributors who have not yet been handled
+// if no such contributors exist, round robbin priniple is applied
+module.exports.nextContributor = async () => {
+  // recetly added
+  const [nextNew] = await mysql.query('SELECT * FROM contributors WHERE updated=? LIMIT 1', ['NO']);
+  if (nextNew) {
+    return nextNew;
+  }
+  // round robbin
+  const [lastUpdatedRow] = await mysql.query('SELECT lastUpdated FROM lastUpdated WHERE id=1');
+  let [nextToUpdate] = await mysql.query('SELECT * FROM contributors WHERE id>? LIMIT 1', [lastUpdatedRow.lastUpdated]);
+  if (!nextToUpdate) {
+    // end of table is reached, start from beginning
+    [nextToUpdate] = await mysql.query('SELECT * FROM contributors WHERE id>0 LIMIT 1');
+  }
+  await mysql.query('UPDATE lastUpdated SET lastUpdated=? WHERE id=1', [nextToUpdate.id]);
+  return nextToUpdate;
+};
+
+module.exports.setContributorUpdated = async (id, status) => mysql
+  .query('UPDATE contributors SET updated=? WHERE id=?', [status, id]);

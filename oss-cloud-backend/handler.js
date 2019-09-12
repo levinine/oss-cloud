@@ -66,8 +66,6 @@ module.exports.addContributor = async (event) => {
       visibleContributionCount: 0,
     });
 
-    gitHubApiService.getContributorPullRequests(body.username)
-      .catch((err) => { console.log(err); });
     return utility.generateResponse(201, {
       message: 'Successfully added contributor',
       success: true,
@@ -82,24 +80,33 @@ module.exports.addContributor = async (event) => {
   }
 };
 
-// returns all pull requests from parents of all forked repos for a single github user
-// POST expected json
-// {
-//    username: string
-// }
-module.exports.updatePullRequests = async () => {
-  let response;
+// updates pull requests for the next contributor
+// next contributor is chosen:
+//   top priority - a contributor that was recently added and not yet updated
+//   if all contributors were updated at least once, a round robbin principle is applied
+// LIMITATIONS:
+// This lambda is meant to be called on a schedule of once per minute due to GitHub Api limitations
+//                                                                     (30 search calls per minute)
+// If a user has more than 29 forked repositories, only 29 will be handled
+// This can be resolved with multiple sequencial calls of this lambda for a single user
+module.exports.updateNextContributor = async () => {
   try {
-    const results = await gitHubApiService.updatePullRequests();
-    response = utility.generatesReponse(200, `${results} contributors updated`, false);
+    const nextToUpdate = await databaseService.nextContributor();
+    const results = await gitHubApiService.getContributorPullRequests(nextToUpdate.username);
+    if (nextToUpdate.updated === 'NO') {
+      await databaseService.setContributorUpdated(nextToUpdate.id, 'YES');
+    }
+    return utility.generateResponse(201, {
+      message: 'Successfully updated contributor',
+      success: true,
+      body: JSON.stringify(results),
+    });
   } catch (error) {
-    console.log('error in getPullRequests handler: ', error);
-    response = utility.generatesReponse(500, {
+    return utility.generateResponse(500, {
       message: error.message,
       success: false,
     });
   }
-  return response;
 };
 
 module.exports.getContributions = async (event) => {
@@ -147,6 +154,7 @@ module.exports.getVisibleUserContributions = async (event) => {
   return utility.generateResponse(200, result);
 };
 
+// updates the status of a contribution (Pending, Visible, Hidden)
 module.exports.updateContributionStatus = async (event) => {
   const [valid, message, body] = utility.checkBody(event.body, ['status', 'contribution']);
   if (!valid) {

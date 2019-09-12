@@ -1,22 +1,49 @@
-const accessToken = process.env.GITHUB_ACCESS_TOKEN;
 const Octokit = require('@octokit/rest');
+const { App } = require('@octokit/app');
+const { request } = require('@octokit/request');
 // github api library
-const octokit = new Octokit({
-  auth: accessToken,
+let octokit;
+const app = new App({
+  id: process.env.GITHUB_APP_ID,
+  privateKey: process.env.GITHUB_APP_PRIVATE_KEY,
 });
 
+const _ = require('lodash');
 const databaseService = require('./databaseService.js');
+
+// aquires a fresh installation access token
+// replaces octokit with new instance using that token
+const refreshInstallationToken = async () => {
+  const jwt = app.getSignedJsonWebToken();
+  const { data } = await request('GET /users/:user/installation', {
+    user: process.env.GITHUB_INSTALL_USER,
+    headers: {
+      authorization: `Bearer ${jwt}`,
+      accept: 'application/vnd.github.machine-man-preview+json',
+    },
+  });
+  const installationId = data.id;
+  const installationAccessToken = await app.getInstallationAccessToken({
+    installationId,
+  });
+  octokit = new Octokit({
+    auth: installationAccessToken,
+  });
+};
 
 // checks if username exists on GitHub
 // params: username
 // return: Promise bool if
-module.exports.checkUsername = async (username) => octokit.search
-  .users({
-    q: `user:${username}`,
-  })
-  .then(() => true)
-  .catch(() => false);
+module.exports.checkUsername = async (username) => {
+  await refreshInstallationToken();
 
+  return octokit.search
+    .users({
+      q: `user:${username}`,
+    })
+    .then(() => true)
+    .catch(() => false);
+};
 // returns a single repo
 const getRepo = async (owner, repo) => octokit.repos
   .get({
@@ -25,6 +52,7 @@ const getRepo = async (owner, repo) => octokit.repos
   })
   .then(({ data }) => data);
 
+// returns all fork repos of a single user
 const getForkedRepos = async (username) => octokit.search
   .repos({ q: `user:${username}+fork:only` })
   .then((response) => response.data.items);
@@ -103,10 +131,15 @@ const filterPullRequestAttributes = (pullRequests) => pullRequests.map((pr) => (
 const comparePullRequests = (newPullRequests, oldPullRequests) => {
   if (!oldPullRequests || oldPullRequests.length === 0) return newPullRequests;
 
-  const comparedPullRequests = newPullRequests
-    .filter((newPr) => !oldPullRequests.find((oldPr) => oldPr.owner === newPr.owner
-        && oldPr.repo === newPr.repo
-        && oldPr.number === newPr.number));
+  // const comparedPullRequests = newPullRequests
+  // .filter((newPr) => !oldPullRequests.find((oldPr) => oldPr.owner === newPr.owner
+  // && oldPr.repo === newPr.repo
+  // && oldPr.number === newPr.number));
+
+  const comparedPullRequests = _.differenceWith(newPullRequests, oldPullRequests,
+    (newPr, oldPr) => oldPr.owner === newPr.owner
+                      && oldPr.repo === newPr.repo
+                      && oldPr.number === newPr.number);
   return comparedPullRequests;
 };
 
@@ -116,8 +149,7 @@ const comparePullRequests = (newPullRequests, oldPullRequests) => {
 const updateContributorPullRequests = async (username, pullRequests) => {
   const filteredPullRequests = filterPullRequestAttributes(pullRequests);
 
-  const [oldPullRequests] = await databaseService.getContributorPullRequests(username);
-
+  const oldPullRequests = await databaseService.getContributorPullRequests(username);
 
   const comparedPullRequests = comparePullRequests(
     filteredPullRequests,
@@ -136,24 +168,15 @@ const updateContributorPullRequests = async (username, pullRequests) => {
 // fetches pull requests from github for a given contributor
 // and updates the database with new pull requests
 module.exports.getContributorPullRequests = async (username) => {
-  const repos = await getForkedRepos(username);
-  const reposDetailed = await getRepoDetails(repos);
-  const parentRepos = await getParentRepos(reposDetailed);
-  const pullRequests = await getUserPullRequests(username, parentRepos);
-  return updateContributorPullRequests(username, pullRequests);
-};
-
-// updates pull requests for all contributors in the database
-module.exports.updatePullRequests = async () => {
-  const contributors = await databaseService.getAllContributors();
-  if (contributors.length === 0) {
-    return 0;
+  try {
+    await refreshInstallationToken();
+    const repos = await getForkedRepos(username);
+    const reposDetailed = await getRepoDetails(repos);
+    const parentRepos = await getParentRepos(reposDetailed);
+    const pullRequests = await getUserPullRequests(username, parentRepos);
+    return updateContributorPullRequests(username, pullRequests);
+  } catch (e) {
+    console.log('error in updating pull requests for user', username, e);
+    return false;
   }
-  const contributorPromises = contributors.map(async (contributor) => {
-    const updates = await this.getContributorPullRequests(contributor.username);
-    return updates;
-  });
-
-  const results = await Promise.all(contributorPromises);
-  return results.map((r) => (r ? 1 : 0)).reduce((a, b) => a + b); // count updated users
 };

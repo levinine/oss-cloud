@@ -6,12 +6,14 @@ provider:
   region: eu-west-2
   stage: ${opt:stage, local}
   environment: 
-    GITHUB_ACCESS_TOKEN: ${ssm:GITHUB_ACCESS_TOKEN}
     MYSQL_ENDPOINT: ${ssm:MYSQL_ENDPOINT}
     MYSQL_PORT: ${ssm:MYSQL_PORT}
     MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
     MYSQL_USER: ${ssm:MYSQL_USER}
     MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
+    GITHUB_APP_ID: ${ssm:GITHUB_APP_ID}
+    GITHUB_APP_PRIVATE_KEY: ${ssm:GITHUB_APP_PRIVATE_KEY}
+    GITHUB_INSTALL_USER: ${ssm:GITHUB_INSTALL_USER} # username of a user that installed the app
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
     AUTH_REGION: ${ssm:AUTH_REGION}
     AUTH_AWS_ACCOUNT_ID: ${ssm:AUTH_AWS_ACCOUNT_ID}
@@ -40,16 +42,6 @@ functions:
           method: get
           cors: true
 
-  updatePullRequests:
-    handler: handler.updatePullRequests
-    events: # http event for testing, will probably change later
-      - http:
-          path: updatePullRequests
-          method: get
-          cors: true
-      - schedule:
-          rate: rate(${self:provider.environment.SCHEDULER_RATE})
-
   getContributions:
     handler: handler.getContributions
     events:
@@ -67,6 +59,12 @@ functions:
           path: contributorVisible
           method: post
           cors: true
+  
+  updateNextContributor:
+    handler: handler.updateNextContributor
+    events:
+      - schedule:
+          rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
             
   updateContributionStatus:
