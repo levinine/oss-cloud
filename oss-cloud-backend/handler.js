@@ -15,7 +15,7 @@ module.exports.getContributors = async (event) => {
       page: page ? parseInt(page, 10) : 1,
       itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
       searchParam: searchParam || '',
-      showHidden: showHidden === 'true',
+      showHidden: showHidden === 'true', // can be later changed to show hidden only if admin invoked this lambda
     });
 
     return utility.generateResponse(200, {
@@ -142,6 +142,18 @@ module.exports.getContributions = async (event) => {
   return response;
 };
 
+
+// Returns visible contributions for single contributor
+// Can be merged with getContributions into a single lambda, but getContributors
+// part of that new lambda should be invokable only by admin
+module.exports.getVisibleUserContributions = async (event) => {
+  const {
+    username,
+  } = event.queryStringParameters || {};
+  const result = await databaseService.getVisibleContributorPullRequests(username);
+  return utility.generateResponse(200, result);
+};
+
 // updates the status of a contribution (Pending, Visible, Hidden)
 module.exports.updateContributionStatus = async (event) => {
   const [valid, message, body] = utility.checkBody(event.body, ['status', 'contribution']);
@@ -156,27 +168,4 @@ module.exports.updateContributionStatus = async (event) => {
   const result = await databaseService.updateContributionStatus(body.status,
     body.contribution.id, body.contribution.author);
   return utility.generateResponse(200, { message: result });
-};
-
-
-// Returns all contributions of given contributor
-module.exports.getUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
-  if (!valid) {
-    return utility.generateResponse(400, { message });
-  }
-
-  const result = await databaseService.getContributorPullRequests(body.username);
-  return utility.generateResponse(200, result);
-};
-
-// Returns visible contributions for single contributor
-module.exports.getVisibleUserContributions = async (event) => {
-  const [valid, message, body] = utility.checkBody(event.body, ['username']);
-  if (!valid) {
-    return utility.generateResponse(400, { message });
-  }
-
-  const result = await databaseService.getVisibleContributorPullRequests(body.username);
-  return utility.generateResponse(200, result);
 };

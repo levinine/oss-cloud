@@ -15,6 +15,9 @@ provider:
     GITHUB_APP_PRIVATE_KEY: ${ssm:GITHUB_APP_PRIVATE_KEY}
     GITHUB_INSTALL_USER: ${ssm:GITHUB_INSTALL_USER} # username of a user that installed the app
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
+    AUTH_REGION: ${ssm:AUTH_REGION}
+    AUTH_AWS_ACCOUNT_ID: ${ssm:AUTH_AWS_ACCOUNT_ID}
+    AUTH_USER_POOL_ID: ${ssm:AUTH_USER_POOL_ID}
 
 plugins:
   - serverless-offline-scheduler
@@ -29,6 +32,7 @@ functions:
           path: addContributor
           method: post
           cors: true
+
 
   getContributors:
     handler: handler.getContributors
@@ -45,14 +49,8 @@ functions:
           path: contributions
           method: get
           cors: true
-  
-  updateContributionStatus:
-    handler: handler.updateContributionStatus
-    events:
-      - http:
-          path: contributionStatus
-          method: post
-          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:${self:provider.environment.AUTH_REGION}:${self:provider.environment.AUTH_AWS_ACCOUNT_ID}:userpool/${self:provider.environment.AUTH_USER_POOL_ID}
 
   contributorVisibleContributions:
     handler: handler.getVisibleUserContributions
@@ -68,3 +66,13 @@ functions:
       - schedule:
           rate: rate(${self:provider.environment.SCHEDULER_RATE})
       
+            
+  updateContributionStatus:
+    handler: handler.updateContributionStatus
+    events:
+      - http:
+          path: contributionStatus
+          method: post
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:${self:provider.environment.AUTH_REGION}:${self:provider.environment.AUTH_AWS_ACCOUNT_ID}:userpool/${self:provider.environment.AUTH_USER_POOL_ID}

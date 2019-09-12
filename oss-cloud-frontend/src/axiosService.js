@@ -65,9 +65,9 @@ export const updateContributionStatus = (status, contribution) => {
 
 export const loadContributorVisibleContributions = username => {
   return axios({
-    method: "post",
-    url: loadContributorVisibleContributionsURL,
-    data: {
+    method: "get",
+    url: contributionsURL,
+    params: {
       username
     }
   });
