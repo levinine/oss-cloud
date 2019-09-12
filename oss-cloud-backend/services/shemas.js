@@ -97,7 +97,7 @@ module.exports.schemas = {
   constributions: {
     $id: 'uC',
     $schema: 'http://json-schema.org/draft-07/schema#',
-    title: 'Contributors',
+    title: 'Contributions',
     type: 'object',
     properties: {
       sortBy: {

@@ -117,9 +117,6 @@ module.exports.getContributionsPaging = (params) => {
     .commit();
 };
 
-module.exports.getContributorPullRequests = (username) => mysql
-  .query('SELECT * FROM contributions WHERE author=?', [username]);
-
 module.exports.getVisibleContributorPullRequests = (username) => mysql
   .query('SELECT * FROM contributions WHERE author=? AND status=?', [username, 'Visible']);
 
