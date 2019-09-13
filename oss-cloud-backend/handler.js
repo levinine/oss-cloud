@@ -105,6 +105,7 @@ module.exports.updateNextContributor = async () => {
       body: JSON.stringify(results),
     });
   } catch (error) {
+    console.log('Error updating contributor', error);
     return utility.generateResponse(500, {
       message: error.message,
       success: false,

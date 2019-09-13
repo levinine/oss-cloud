@@ -94,15 +94,20 @@ const searchUserPullRequests = async (username, repo) => {
 // retrieves pull requests for given user for each repo in given array
 const getUserPullRequests = async (username, repos) => {
   let pullRequests = [];
-  const pullRequestPromises = repos.map(async (repo) => {
-    const repoPullRequests = await searchUserPullRequests(username, repo);
-    pullRequests = pullRequests.concat(repoPullRequests);
-    return repoPullRequests;
-  });
+  try {
+    const pullRequestPromises = repos.map(async (repo) => {
+      const repoPullRequests = await searchUserPullRequests(username, repo);
+      pullRequests = pullRequests.concat(repoPullRequests);
+      return repoPullRequests;
+    });
 
-  await Promise.all(pullRequestPromises);
-
-  return pullRequests;
+    await Promise.all(pullRequestPromises);
+    return pullRequests;
+  } catch (e) {
+    // Error should say GitHub API rate limit exceeded
+    // That means the contributor being updated has more than 29 forked repos
+    return pullRequests;
+  }
 };
 
 // filter unnecessay attributes from pull requests and add status
