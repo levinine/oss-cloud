@@ -218,9 +218,8 @@ export default {
   },
   methods: {
     searchContributions() {
-      this.page = 1; // this line is needed
+      this.page = 1;
       this.loadContributions();
-      this.page = 1; // this line is also needed, without it table stays empty
     },
     loadContributions() {
       this.loading = true;
