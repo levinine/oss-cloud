@@ -31,17 +31,32 @@
           item-key="username"
           show-expand
           class="elevation-2"
+          @click:row="expandRow"
         >
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="grey lighten-4">
-              <ContributionsTable :username="item.username"></ContributionsTable>
+              <ContributionsTable :username="item.username" :key="item.username"></ContributionsTable>
             </td>
           </template>
 
           <template v-slot:item.link="{ item }">
-            <v-btn fab dark color="#24292e" :href="item.link" height="30" width="30" class="mr-5">
+            <v-btn
+              fab
+              dark
+              color="#24292e"
+              :href="item.link"
+              height="30"
+              width="30"
+              class="mr-5"
+              @mouseenter="isMouseOverButton = true"
+              @mouseleave="isMouseOverButton = false"
+            >
               <v-icon dark>mdi-github-circle</v-icon>
             </v-btn>
+          </template>
+
+          <template v-if="loggedIn" v-slot:item.username="{ item }">
+            <a @click="showContributions(item.username)">{{item.username}}</a>
           </template>
         </v-data-table>
         <div class="my-3 mx-8 float-right">
@@ -79,6 +94,7 @@ export default {
       options: {},
       singleExpand: true,
       expanded: [],
+      isMouseOverButton: false,
       headers: [
         { text: "Username", align: "left", value: "username" },
         { text: "First name", value: "firstName" },
@@ -103,6 +119,7 @@ export default {
       }
     };
   },
+  props: ["loggedIn"],
   watch: {
     options: {
       handler() {
@@ -117,6 +134,20 @@ export default {
     }
   },
   methods: {
+    showContributions(username) {
+      this.$router.replace({
+        name: "contributionsView",
+        params: { username }
+      });
+    },
+    expandRow(item) {
+      if (this.isMouseOverButton) {
+        return;
+      }
+      if (this.expanded.length === 0 || this.expanded[0] !== item)
+        this.expanded = [item];
+      else this.expanded = [];
+    },
     updateSeachParam() {
       this.searchParam = this.searchText;
     },

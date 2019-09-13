@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="2">
             <v-text-field
-              @keydown="$event.key==='Enter' ?  loadContributions(): null "
+              @keydown="$event.key==='Enter' ?  searchContributions(): null "
               class="mx-4 flex-grow-1"
               v-model="searchText"
               append-icon="search"
@@ -40,7 +40,11 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker @change="loadContributions" v-model="dateFrom" @input="menu1 = false"></v-date-picker>
+              <v-date-picker
+                @change="searchContributions"
+                v-model="dateFrom"
+                @input="menu1 = false"
+              ></v-date-picker>
             </v-menu>
           </v-col>
           <v-col cols="2">
@@ -63,12 +67,12 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker @change="loadContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
+              <v-date-picker @change="searchContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
             </v-menu>
           </v-col>
           <v-col cols="1">
             <v-select
-              @change="loadContributions"
+              @change="searchContributions"
               class="mx-4"
               :items="['All', 'Pending', 'Visible', 'Hidden']"
               label="Status"
@@ -213,6 +217,11 @@ export default {
     }
   },
   methods: {
+    searchContributions() {
+      this.page = 1; // this line is needed
+      this.loadContributions();
+      this.page = 1; // this line is also needed, without it table stays empty
+    },
     loadContributions() {
       this.loading = true;
       let { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -243,13 +252,17 @@ export default {
     },
     updateStatus(contribution, status) {
       updateContributionStatus(status, contribution).then(response => {
-        console.log(response);
         this.loadContributions();
       });
     }
   },
   mounted: function() {
     this.options.itemsPerPage = 13;
+    let searchedUsername = this.$route.params.username;
+    if (searchedUsername !== undefined) {
+      this.searchText = searchedUsername;
+      this.loadContributions();
+    }
   }
 };
 </script>

@@ -14,8 +14,8 @@ module.exports.getContributors = async (event) => {
     } = params;
 
     const [contributors, [contributorsLength]] = await databaseService.getContributorsPaging({
-      sortBy: typeof (sortBy) === 'string' ? sortBy : 'username',
-      sortDesc: sortDesc === 'true',
+      sortBy: typeof (sortBy) === 'string' ? sortBy : 'visibleContributionCount',
+      sortDesc: sortDesc !== 'false',
       page: page ? parseInt(page, 10) : 1,
       itemsPerPage: itemsPerPage ? parseInt(itemsPerPage, 10) : 13,
       searchParam: searchParam || '',

@@ -75,7 +75,7 @@ export default {
           user = await Auth.completeNewPassword(user, this.password);
         }
         this.dialog = false;
-        this.$emit("login");
+        this.$root.$emit("loginEvent");
       } catch (err) {
         if (err.code === "UserNotFoundException")
           this.alertMessage = "Wrong username";
