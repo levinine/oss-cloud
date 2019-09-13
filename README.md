@@ -40,7 +40,7 @@ Setup the following parameters on SSM Paramter store (make sure the type is Secu
 
 ### Back-end
 
-From "oss-cloud-backend" directory run:
+From _oss-cloud-backend_ directory run:
 ```
 npm install
 sls deploy --s DESIRED_STAGE
@@ -53,7 +53,7 @@ You will need an S3 bucket on your aws account. To create one, run:
 
 Replace baseURL in axiosService.js with your base lambda URL.
 
-From "oss-could-frontend" directory run:
+From _oss-could-frontend_ directory run:
 ```
 npm install
 npm run build
