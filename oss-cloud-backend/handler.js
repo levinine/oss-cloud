@@ -95,16 +95,21 @@ module.exports.addContributor = async (event) => {
 module.exports.updateNextContributor = async () => {
   try {
     const nextToUpdate = await databaseService.nextContributor();
+    console.log('Updating contributor', nextToUpdate.username);
     const results = await gitHubApiService.getContributorPullRequests(nextToUpdate.username);
+    console.log('Updated contributor', nextToUpdate.username);
     if (nextToUpdate.updated === 'NO') {
+      console.log('Setting contributor updated status to YES for', nextToUpdate.username);
       await databaseService.setContributorUpdated(nextToUpdate.id, 'YES');
     }
+    console.log('Generating response', nextToUpdate.username);
     return utility.generateResponse(201, {
       message: 'Successfully updated contributor',
       success: true,
       body: JSON.stringify(results),
     });
   } catch (error) {
+    console.log('Error updating contributor', error);
     return utility.generateResponse(500, {
       message: error.message,
       success: false,
