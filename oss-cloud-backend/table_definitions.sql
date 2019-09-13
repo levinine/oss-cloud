@@ -24,3 +24,10 @@ CREATE TABLE `contributors` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
+CREATE TABLE `lastUpdated` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lastUpdated` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
