@@ -9,42 +9,19 @@
     </div>
     <div class="mx-3">
       <AddContributor></AddContributor>
-      <Logout v-if="loggedIn" @logout="logout"></Logout>
-      <Login v-if="!loggedIn" @login="login"></Login>
+      <Logout v-if="loggedIn"></Logout>
+      <Login v-if="!loggedIn"></Login>
     </div>
   </v-app-bar>
 </template>
 
 <script>
-import { Auth } from "aws-amplify";
 import AddContributor from "./AddContributor.vue";
 import Login from "./Login.vue";
 import Logout from "./Logout.vue";
 
 export default {
   components: { AddContributor, Login, Logout },
-  data() {
-    return {
-      loggedIn: false
-    };
-  },
-  mounted() {
-    Auth.currentAuthenticatedUser()
-      .then(() => {
-        this.loggedIn = true;
-      })
-      .catch(() => {
-        this.loggedIn = false;
-      });
-  },
-  methods: {
-    logout() {
-      this.loggedIn = false;
-      this.$router.push("/");
-    },
-    login() {
-      this.loggedIn = true;
-    }
-  }
+  props: ["loggedIn"]
 };
 </script>

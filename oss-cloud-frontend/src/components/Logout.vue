@@ -9,7 +9,7 @@ export default {
   methods: {
     logout() {
       Auth.signOut().then(() => {
-        this.$emit('logout');
+        this.$root.$emit("logoutEvent");
       });
     }
   }

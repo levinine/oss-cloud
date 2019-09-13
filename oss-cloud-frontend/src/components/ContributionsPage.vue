@@ -250,6 +250,11 @@ export default {
   },
   mounted: function() {
     this.options.itemsPerPage = 13;
+    let searchedUsername = this.$route.params.username;
+    if (searchedUsername !== undefined) {
+      this.searchText = searchedUsername;
+      this.loadContributions();
+    }
   }
 };
 </script>

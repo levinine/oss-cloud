@@ -2,6 +2,7 @@
   <v-card>
     <v-data-table
       :headers="headers"
+      :loading="loading"
       :items="contributions"
       :items-per-page="5"
       item-key="link"
@@ -68,6 +69,7 @@ import { loadContributorVisibleContributions } from "./../axiosService.js";
 export default {
   data() {
     return {
+      loading: false,
       headers: [
         { text: "Date Created", value: "dateCreated" },
         { text: "Repository", value: "repo" },
@@ -82,9 +84,16 @@ export default {
   props: ["username"],
   methods: {
     loadContributions() {
-      loadContributorVisibleContributions(this.username).then(response => {
-        this.contributions = response.data;
-      });
+      this.loading = true;
+      loadContributorVisibleContributions(this.username)
+        .then(response => {
+          this.contributions = response.data;
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log(e);
+          this.loading = false;
+        });
     }
   },
   mounted: function() {

@@ -1,11 +1,12 @@
 <template>
-  <ContributorsTable></ContributorsTable>
+  <ContributorsTable :loggedIn="loggedIn"></ContributorsTable>
 </template>
 
 <script>
 import ContributorsTable from "./ContributorsTable.vue";
 
 export default {
-  components: { ContributorsTable }
+  components: { ContributorsTable },
+  props: ["loggedIn"]
 };
 </script>
