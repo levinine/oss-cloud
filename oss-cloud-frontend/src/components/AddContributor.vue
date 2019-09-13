@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-btn color="#1533a1" class="mt-10 mr-10" v-on="on">Add contributor</v-btn>
+      <v-btn color="#1533a1" class="mt-10 mr-2" v-on="on">Add contributor</v-btn>
     </template>
     <v-card>
       <v-form ref="addContributorForm" v-model="valid" @submit.prevent="addContributor">

@@ -5,7 +5,7 @@
         <v-row>
           <v-col cols="2">
             <v-text-field
-              @keydown="$event.key==='Enter' ?  loadContributions(): null "
+              @keydown="$event.key==='Enter' ?  searchContributions(): null "
               class="mx-4 flex-grow-1"
               v-model="searchText"
               append-icon="search"
@@ -213,6 +213,10 @@ export default {
     }
   },
   methods: {
+    searchContributions() {
+      this.page = 1;
+      this.loadContributions();
+    },
     loadContributions() {
       this.loading = true;
       let { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -243,7 +247,6 @@ export default {
     },
     updateStatus(contribution, status) {
       updateContributionStatus(status, contribution).then(response => {
-        console.log(response);
         this.loadContributions();
       });
     }
