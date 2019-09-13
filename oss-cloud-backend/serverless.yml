@@ -6,19 +6,18 @@ provider:
   region: eu-west-2
   stage: ${opt:stage, local}
   environment: 
-    MYSQL_ENDPOINT: ${ssm:MYSQL_ENDPOINT}
-    MYSQL_PORT: ${ssm:MYSQL_PORT}
-    MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
-    MYSQL_USER: ${ssm:MYSQL_USER}
-    MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
-    GITHUB_APP_ID: ${ssm:/oss-cloud/prod/github-app-id~true}
-    GITHUB_APP_PRIVATE_KEY: ${ssm:/oss-cloud/prod/github-app-private-key~true}
-    GITHUB_APP_INSTALLATION_ID: ${ssm:/oss-cloud/prod/github-app-installation-id~true}
-    GITHUB_INSTALL_USER: ${ssm:GITHUB_INSTALL_USER} # username of a user that installed the app
+    MYSQL_ENDPOINT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-endpoint~true}
+    MYSQL_PORT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-port~true}
+    MYSQL_DATABASE: ${ssm:/oss-cloud/${self:provider.stage}/mysql-database~true}
+    MYSQL_USER: ${ssm:/oss-cloud/${self:provider.stage}/mysql-user~true}
+    MYSQL_PASSWORD: ${ssm:/oss-cloud/${self:provider.stage}/mysql-password~true}
+    GITHUB_APP_ID: ${ssm:/oss-cloud/${self:provider.stage}/github-app-id~true}
+    GITHUB_APP_PRIVATE_KEY: ${ssm:/oss-cloud/${self:provider.stage}/github-app-private-key~true}
+    GITHUB_APP_INSTALLATION_ID: ${ssm:/oss-cloud/${self:provider.stage}/github-app-installation-id~true}
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
-    AUTH_REGION: ${ssm:AUTH_REGION}
-    AUTH_AWS_ACCOUNT_ID: ${ssm:AUTH_AWS_ACCOUNT_ID}
-    AUTH_USER_POOL_ID: ${ssm:AUTH_USER_POOL_ID}
+    AUTH_REGION: ${ssm:/oss-cloud/${self:provider.stage}/auth-region~true}
+    AUTH_AWS_ACCOUNT_ID: ${ssm:/oss-cloud/${self:provider.stage}/auth-aws-account-id~true}
+    AUTH_USER_POOL_ID: ${ssm:/oss-cloud/${self:provider.stage}/auth-user-pool-id~true}
 
 plugins:
   - serverless-offline-scheduler
