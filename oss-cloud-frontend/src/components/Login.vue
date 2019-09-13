@@ -80,7 +80,7 @@ export default {
         if (err.code === "UserNotFoundException")
           this.alertMessage = "Wrong username";
         else if (err.code === "NotAuthorizedException")
-          this.alertMessage = "Wrong username";
+          this.alertMessage = "Wrong password";
         else {
           this.alertMessage = "Error while logging in";
         }

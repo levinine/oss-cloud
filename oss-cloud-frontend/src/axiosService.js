@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Auth } from "aws-amplify";
 
-// const baseURL = "http://localhost:3000";
 const baseURL = "https://jhvejstuuc.execute-api.eu-west-2.amazonaws.com/aws";
 
 const addContributorURL = baseURL + "/addContributor";
@@ -66,7 +65,7 @@ export const updateContributionStatus = (status, contribution) => {
 export const loadContributorVisibleContributions = username => {
   return axios({
     method: "get",
-    url: contributionsURL,
+    url: loadContributorVisibleContributionsURL,
     params: {
       username
     }

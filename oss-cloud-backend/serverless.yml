@@ -11,8 +11,9 @@ provider:
     MYSQL_DATABASE: ${ssm:MYSQL_DATABASE}
     MYSQL_USER: ${ssm:MYSQL_USER}
     MYSQL_PASSWORD: ${ssm:MYSQL_PASSWORD}
-    GITHUB_APP_ID: ${ssm:GITHUB_APP_ID}
-    GITHUB_APP_PRIVATE_KEY: ${ssm:GITHUB_APP_PRIVATE_KEY}
+    GITHUB_APP_ID: ${ssm:/oss-cloud/prod/github-app-id~true}
+    GITHUB_APP_PRIVATE_KEY: ${ssm:/oss-cloud/prod/github-app-private-key~true}
+    GITHUB_APP_INSTALLATION_ID: ${ssm:/oss-cloud/prod/github-app-installation-id~true}
     GITHUB_INSTALL_USER: ${ssm:GITHUB_INSTALL_USER} # username of a user that installed the app
     SCHEDULER_RATE: ${file(./config/${self:provider.stage}.yml):SCHEDULER_RATE}
     AUTH_REGION: ${ssm:AUTH_REGION}
@@ -57,7 +58,7 @@ functions:
     events:
       - http:
           path: contributorVisible
-          method: post
+          method: get
           cors: true
   
   updateNextContributor:

@@ -162,3 +162,7 @@ module.exports.nextContributor = async () => {
 
 module.exports.setContributorUpdated = async (id, status) => mysql
   .query('UPDATE contributors SET updated=? WHERE id=?', [status, id]);
+
+// used for updating pull requests
+module.exports.getContributorPullRequests = (username) => mysql
+  .query('SELECT * FROM contributions WHERE author=?', [username]);

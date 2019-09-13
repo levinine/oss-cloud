@@ -1,6 +1,5 @@
 const Octokit = require('@octokit/rest');
 const { App } = require('@octokit/app');
-const { request } = require('@octokit/request');
 // github api library
 let octokit;
 const app = new App({
@@ -14,15 +13,7 @@ const databaseService = require('./databaseService.js');
 // aquires a fresh installation access token
 // replaces octokit with new instance using that token
 const refreshInstallationToken = async () => {
-  const jwt = app.getSignedJsonWebToken();
-  const { data } = await request('GET /users/:user/installation', {
-    user: process.env.GITHUB_INSTALL_USER,
-    headers: {
-      authorization: `Bearer ${jwt}`,
-      accept: 'application/vnd.github.machine-man-preview+json',
-    },
-  });
-  const installationId = data.id;
+  const installationId = process.env.GITHUB_APP_INSTALLATION_ID;
   const installationAccessToken = await app.getInstallationAccessToken({
     installationId,
   });
@@ -103,15 +94,20 @@ const searchUserPullRequests = async (username, repo) => {
 // retrieves pull requests for given user for each repo in given array
 const getUserPullRequests = async (username, repos) => {
   let pullRequests = [];
-  const pullRequestPromises = repos.map(async (repo) => {
-    const repoPullRequests = await searchUserPullRequests(username, repo);
-    pullRequests = pullRequests.concat(repoPullRequests);
-    return repoPullRequests;
-  });
+  try {
+    const pullRequestPromises = repos.map(async (repo) => {
+      const repoPullRequests = await searchUserPullRequests(username, repo);
+      pullRequests = pullRequests.concat(repoPullRequests);
+      return repoPullRequests;
+    });
 
-  await Promise.all(pullRequestPromises);
-
-  return pullRequests;
+    await Promise.all(pullRequestPromises);
+    return pullRequests;
+  } catch (e) {
+    // Error should say GitHub API rate limit exceeded
+    // That means the contributor being updated has more than 29 forked repos
+    return pullRequests;
+  }
 };
 
 // filter unnecessay attributes from pull requests and add status
