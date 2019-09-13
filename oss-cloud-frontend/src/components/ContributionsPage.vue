@@ -40,7 +40,11 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker @change="loadContributions" v-model="dateFrom" @input="menu1 = false"></v-date-picker>
+              <v-date-picker
+                @change="searchContributions"
+                v-model="dateFrom"
+                @input="menu1 = false"
+              ></v-date-picker>
             </v-menu>
           </v-col>
           <v-col cols="2">
@@ -63,12 +67,12 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker @change="loadContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
+              <v-date-picker @change="searchContributions" v-model="dateTo" @input="menu2 = false"></v-date-picker>
             </v-menu>
           </v-col>
           <v-col cols="1">
             <v-select
-              @change="loadContributions"
+              @change="searchContributions"
               class="mx-4"
               :items="['All', 'Pending', 'Visible', 'Hidden']"
               label="Status"
@@ -214,8 +218,9 @@ export default {
   },
   methods: {
     searchContributions() {
-      this.page = 1;
+      this.page = 1; // this line is needed
       this.loadContributions();
+      this.page = 1; // this line is also needed, without it table stays empty
     },
     loadContributions() {
       this.loading = true;
