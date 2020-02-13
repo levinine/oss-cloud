@@ -55,8 +55,15 @@
             </v-btn>
           </template>
 
-          <template v-if="loggedIn" v-slot:item.username="{ item }">
-            <a @click="showContributions(item.username)">{{item.username}}</a>
+          <template v-slot:item.username="{ item }">
+            <a v-if="loggedIn" @click="showContributions(item.username)">
+              <div><img height=48 width=48 :src="item.imageUrl" /></div>
+              <div>{{item.username}}</div>
+            </a>
+            <div v-if="!loggedIn">
+              <div><img height=48 width=48 :src="item.imageUrl" /></div>
+              <div>{{item.username}}</div>
+            </div>
           </template>
         </v-data-table>
         <div class="my-3 mx-8 float-right">
@@ -170,6 +177,7 @@ export default {
           this.loading = false;
         })
         .catch(e => {
+          // eslint-disable-next-line
           console.log(e);
           this.loading = false;
         });

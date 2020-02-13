@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Auth } from "aws-amplify";
 
-const baseURL = "https://jhvejstuuc.execute-api.eu-west-2.amazonaws.com/aws";
+const baseURL = "https://ovs55nsv61.execute-api.eu-west-2.amazonaws.com/prod";
 
 const addContributorURL = baseURL + "/addContributor";
 const getAllContributorsURL = baseURL + "/contributors";

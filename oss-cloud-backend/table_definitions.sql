@@ -19,6 +19,7 @@ CREATE TABLE `contributors` (
   `firstName` varchar(20) DEFAULT NULL,
   `lastName` varchar(20) DEFAULT NULL,
   `link` varchar(60) DEFAULT NULL,
+  `imageUrl` varchar(255) DEFAULT NULL,
   `visibleContributionCount` int(11) DEFAULT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),

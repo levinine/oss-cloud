@@ -4,8 +4,8 @@ provider:
   name: aws
   runtime: nodejs10.x
   region: eu-west-2
-  stage: ${opt:stage, local}
-  environment: 
+  stage: ${opt:stage, 'local'}
+  environment:
     MYSQL_ENDPOINT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-endpoint~true}
     MYSQL_PORT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-port~true}
     MYSQL_DATABASE: ${ssm:/oss-cloud/${self:provider.stage}/mysql-database~true}
@@ -33,6 +33,8 @@ functions:
           method: post
           cors: true
 
+  getUser:
+    handler: handler.getUser
 
   getContributors:
     handler: handler.getContributors
@@ -59,14 +61,13 @@ functions:
           path: contributorVisible
           method: get
           cors: true
-  
+
   updateNextContributor:
     handler: handler.updateNextContributor
     events:
       - schedule:
           rate: rate(${self:provider.environment.SCHEDULER_RATE})
-      
-            
+
   updateContributionStatus:
     handler: handler.updateContributionStatus
     events:

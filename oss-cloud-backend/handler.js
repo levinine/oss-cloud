@@ -55,17 +55,20 @@ module.exports.addContributor = async (event) => {
         success: false,
       });
     }
-    if (!(await gitHubApiService.checkUsername(body.username))) {
+    const user = await gitHubApiService.getUser(body.username);
+    if (!user) {
       return utility.generateResponse(404, {
         message: 'Username does not exist on GitHub',
         success: false,
       });
     }
+    
     await databaseService.addContributor({
       username: body.username,
       firstName: body.firstName,
       lastName: body.lastName,
       link: `https://github.com/${body.username}`,
+      imageUrl: user.avatar_url,
       visibleContributionCount: 0,
     });
 
@@ -83,6 +86,12 @@ module.exports.addContributor = async (event) => {
   }
 };
 
+module.exports.getUser = async () => {
+  // sls invoke local -s prod -f getUser -e username=mmicko
+  const user = await gitHubApiService.getUser(process.env.username);
+  console.log('retrieved user', JSON.stringify(user, null, 2));
+};
+
 // updates pull requests for the next contributor
 // next contributor is chosen:
 //   top priority - a contributor that was recently added and not yet updated
@@ -98,6 +107,10 @@ module.exports.updateNextContributor = async () => {
     const results = await gitHubApiService.getContributorPullRequests(nextToUpdate.username);
     if (nextToUpdate.updated === 'NO') {
       await databaseService.setContributorUpdated(nextToUpdate.id, 'YES');
+    }
+    const user = await gitHubApiService.getUser(nextToUpdate.username);
+    if (user) {
+      await databaseService.updateContributorImageUrl(nextToUpdate.username, user.avatar_url);
     }
     return utility.generateResponse(201, {
       message: 'Successfully updated contributor',

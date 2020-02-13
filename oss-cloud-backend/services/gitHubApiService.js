@@ -35,6 +35,22 @@ module.exports.checkUsername = async (username) => {
     .then(() => true)
     .catch(() => false);
 };
+// returns user with given username on GitHub
+// params: username
+// return: Promise<user>, resolves null if user doesn't exist
+module.exports.getUser = async (username) => {
+  await refreshInstallationToken();
+
+  return octokit.search
+    .users({
+      q: `user:${username}`,
+    })
+    .then((response) => {
+      // console.log(response);
+      return response && response.data && response.data.items && response.data.items[0] || null;
+    })
+    .catch(() => null);
+};
 // returns a single repo
 const getRepo = async (owner, repo) => octokit.repos
   .get({
@@ -53,14 +69,12 @@ const getForkedRepos = async (username) => octokit.search
 // returns a more detailed representation of the repo
 const getRepoDetails = async (repos) => {
   const repoPromises = repos.map((repo) => getRepo(repo.owner.login, repo.name));
-
   return Promise.all(repoPromises);
 };
 
 // returns the parent repos from an array of forked repos (details needed)
 const getParentRepos = async (repos) => {
   const repoPromises = repos.map((repo) => getRepo(repo.parent.owner.login, repo.parent.name));
-
   return Promise.all(repoPromises);
 };
 

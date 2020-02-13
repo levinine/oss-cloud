@@ -245,12 +245,13 @@ export default {
           this.loading = false;
         })
         .catch(e => {
+          // eslint-disable-next-line
           console.log(e);
           this.loading = false;
         });
     },
     updateStatus(contribution, status) {
-      updateContributionStatus(status, contribution).then(response => {
+      updateContributionStatus(status, contribution).then(() => {
         this.loadContributions();
       });
     }

@@ -60,15 +60,18 @@ module.exports.checkUsername = async (username) => {
 // saves contributor object in database
 // params: contributor
 module.exports.addContributor = (contributor) => mysql
-  .query('INSERT INTO contributors (username, firstName, lastName, link, visibleContributionCount) VALUES(?)',
+  .query('INSERT INTO contributors (username, firstName, lastName, link, imageUrl, visibleContributionCount) VALUES(?)',
     [[
       contributor.username,
       contributor.firstName,
       contributor.lastName,
       contributor.link,
+      contributor.imageUrl,
       contributor.visibleContributionCount,
     ]]);
 
+module.exports.updateContributorImageUrl = (username, imageUrl) => mysql
+  .query('UPDATE contributors SET imageUrl = ? WHERE username = ?', [imageUrl, username]);
 
 module.exports.getContributionsPaging = (params) => {
   let searchTextPart = '';

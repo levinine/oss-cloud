@@ -10,7 +10,6 @@ This project was made using the [serverless](https://serverless.com) framework w
 ## Prerequisites
 
 - Node.js 8+
-- Python
 - AWS cli
 - AWS account
 
@@ -43,7 +42,7 @@ Setup the following parameters on SSM Paramter store (make sure the type is Secu
 From _oss-cloud-backend_ directory run:
 ```
 npm install
-sls deploy --s DESIRED_STAGE
+sls deploy -s DESIRED_STAGE
 ```
 
 ### Front-end
@@ -65,7 +64,10 @@ Your site will be hosted on http://my-bucket.s3-website-us-west-2.amazonaws.com
 
 ## Possible Improvements
 
-- Better work-around GitHub Api rate limits. Currently there is a limit to 29 forked repositories per contributor.
+- Increase GitHub Api rate limits. Currently there is a limit of 30 requests per minute, which means 29 forked repositories per contributor.
 - Overall UI improvements. (Prettier front page, support for mobile)
-- Addinional functionalities for handling contributors as an administrator.
+- Additional functionalities for handling contributors as an administrator
+-- Manage all users, at the moment ones without forks are invisible
+-- Bulk change users
 - Displaying more information about contributions. (Show whether it is open/closed, merged, etc.)
+- Support contributions made under organization account

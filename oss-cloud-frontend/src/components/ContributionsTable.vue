@@ -91,6 +91,7 @@ export default {
           this.loading = false;
         })
         .catch(e => {
+          // eslint-disable-next-line
           console.log(e);
           this.loading = false;
         });
