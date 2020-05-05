@@ -3,7 +3,7 @@ service: oss-cloud-backend
 provider:
   name: aws
   runtime: nodejs10.x
-  region: eu-west-2
+  region: eu-west-1
   stage: ${opt:stage, 'local'}
   environment:
     MYSQL_ENDPOINT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-endpoint~true}
