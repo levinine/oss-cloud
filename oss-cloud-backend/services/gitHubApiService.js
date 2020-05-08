@@ -85,7 +85,7 @@ const searchUserPullRequests = async (username, repo) => {
   do {
     await octokit.search
       .issuesAndPullRequests({
-        q: `repo:${repo.owner.login}/${repo.name}+author:${username}+is:pr`,
+        q: `repo:${repo.owner.login}/${repo.name}+author:${username}+is:pr+is:merged`,
         per_page: 100,
         page: pullRequestNum,
       })
