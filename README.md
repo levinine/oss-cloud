@@ -52,6 +52,8 @@ You will need an S3 bucket on your aws account. To create one, run:
 
 Replace baseURL in axiosService.js with your base lambda URL.
 
+Set cognito user pool config in main.js file.
+
 From _oss-could-frontend_ directory run:
 ```
 npm install
@@ -60,7 +62,9 @@ aws s3 cp ./dist s3://name-of-your-bucket --recursive
 aws s3 website s3://name-of-your-bucket/ --index-document index.html
 ```
 
-Your site will be hosted on http://my-bucket.s3-website-us-west-2.amazonaws.com
+Your site will be hosted on http://name-of-your-bucket.s3-website-us-west-2.amazonaws.com
+
+To make site accessible, bucket policy and bucket cors should be set. Configuration can be find in files `bucket-policy.json` and `bucket-cors-configuration.xml`
 
 ## Possible Improvements
 
