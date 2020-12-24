@@ -23,6 +23,21 @@ plugins:
   - serverless-offline-scheduler
   - serverless-offline-dotenv
   - serverless-offline
+  - serverless-vpc-plugin
+
+custom:
+  vpcConfig:
+    cidrBlock: '172.16.0.0/16'
+    createNatGateway: true
+    creteDbSubnet: true
+    createParameters: true
+    zones:
+      - eu-west-1a
+      - eu-west-1b
+      - eu-west-1c
+    subnetGroups:
+      - rds
+    exportOutputs: true
 
 functions:
   addContributor:
@@ -77,3 +92,16 @@ functions:
           cors: true
           authorizer:
             arn: arn:aws:cognito-idp:${self:provider.environment.AUTH_REGION}:${self:provider.environment.AUTH_AWS_ACCOUNT_ID}:userpool/${self:provider.environment.AUTH_USER_POOL_ID}
+
+resources:
+  Resources:
+    ServerlessStorageSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: 'Inbound rules for DB'
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: '3306'
+            ToPort: '3306'
+            SourceSecurityGroupId: !GetAtt AppSecurityGroup.GroupId
