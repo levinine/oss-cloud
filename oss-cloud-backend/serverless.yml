@@ -29,7 +29,7 @@ custom:
   vpcConfig:
     cidrBlock: '172.16.0.0/16'
     createNatGateway: true
-    creteDbSubnet: true
+    createDbSubnet: true
     createParameters: true
     zones:
       - eu-west-1a
@@ -105,3 +105,13 @@ resources:
             FromPort: '3306'
             ToPort: '3306'
             SourceSecurityGroupId: !GetAtt AppSecurityGroup.GroupId
+    #proveri jos jednom
+    PublicOutboundRule1:
+      Type: AWS::EC2::SecurityGroupEgress
+      Properties:
+        GroupId: !GetAtt AppSecurityGroup.GroupId
+        DestinationSecurityGroupId: !Ref ServerlessStorageSecurityGroup
+        IpProtocol: tcp
+        FromPort: '3306'
+        ToPort: '3306'
+
