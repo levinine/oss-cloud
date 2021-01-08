@@ -1,7 +1,4 @@
 ---
-#  AWSTemplateFormatVersion: '2010-09-09'
-#  Description: 'Create VPC with private subnets for lambdas and db'
-
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -117,8 +114,8 @@ Resources:
   DHCPOptions:
     Type: 'AWS::EC2::DHCPOptions'
     Properties:
-      DomainName: "eu-west-1.compute.internal"
-      #        Fn::Sub: "${AWS::Region}.compute.internal"
+      DomainName: # "eu-west-1.compute.internal"
+        Fn::Sub: "${AWS::Region}.compute.internal"
       DomainNameServers:
         - AmazonProvidedDNS
       Tags:
@@ -153,7 +150,6 @@ Resources:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
       GroupId: !GetAtt LambdaSecurityGroup.GroupId
-      #      DestinationSecurityGroupId: !Ref DBSecurityGroup
       CidrIp: 0.0.0.0/0
       IpProtocol: tcp
       FromPort: 3306
@@ -193,8 +189,6 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-  #      DependsOn:
-  #        - InternetGatewayAttachment
   PublicRTAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
@@ -350,8 +344,8 @@ Resources:
   DynamodbVPCEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
-      ServiceName: com.amazonaws.eu-west-1.dynamodb
-      #        Fn::Sub: com.amazonaws.${AWS::Region}.dynamodb
+      ServiceName: # com.amazonaws.eu-west-1.dynamodb
+        Fn::Sub: com.amazonaws.#{AWS::Region}.dynamodb
       VpcId:
         Ref: VPC
       VpcEndpointType: Gateway
@@ -431,11 +425,3 @@ Resources:
           - ","
           - - Ref: DbSubnet1
             - Ref: DbSubnet2
-#Outputs:
-#  VPC:
-#  Description: VPC logical resource ID
-#  Value:
-#    Ref: VPC
-#  Export:
-#    Name:
-#      Fn::Sub: "${AWS::StackName}-VPC"
