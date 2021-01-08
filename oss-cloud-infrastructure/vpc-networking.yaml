@@ -115,7 +115,7 @@ Resources:
     Type: 'AWS::EC2::DHCPOptions'
     Properties:
       DomainName: # "eu-west-1.compute.internal"
-        Fn::Sub: "${AWS::Region}.compute.internal"
+        Fn::Sub: "#{AWS::Region}.compute.internal"
       DomainNameServers:
         - AmazonProvidedDNS
       Tags:
