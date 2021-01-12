@@ -72,13 +72,13 @@ There are several important SSM parameters.
 
 List of all networking parameters are listed bellow:
 
-`/NETWORKING/oss-infrastructure-prod/DBSubnets`
-`/NETWORKING/oss-infrastructure-prod/DbSecurityGroup`
-`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup`
-`/NETWORKING/oss-infrastructure-prod/LambdaSubnets`
-`/NETWORKING/oss-infrastructure-prod/PublicSubnets`
-`/NETWORKING/oss-infrastructure-prod/RDSSubnetGroup`
-`/NETWORKING/oss-infrastructure-prod/VPC`
+`/NETWORKING/oss-infrastructure-prod/DBSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/DbSecurityGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/LambdaSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/PublicSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/RDSSubnetGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/VPC` <br/>
 
 In order to store all lambda functions inside custom VPC, in the VPC section we need to declare subnets and security group for lambda.
 
