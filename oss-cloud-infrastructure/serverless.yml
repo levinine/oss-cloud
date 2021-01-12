@@ -1,4 +1,4 @@
-service: tst-infrastructure
+service: oss-infrastructure
 
 provider:
   name: aws

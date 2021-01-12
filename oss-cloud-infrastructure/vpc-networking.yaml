@@ -7,6 +7,10 @@ Resources:
       EnableDnsHostnames: 'true'
       EnableDnsSupport: 'true'
       InstanceTenancy: 'default'
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Sub: "#{AWS::StackName}-vpc"
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -46,75 +50,81 @@ Resources:
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: 'eu-west-1a'
+      AvailabilityZone:
+        Fn::Sub: '#{AWS::Region}a'
       CidrBlock: '10.0.0.0/24'
       VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value:
-            Fn::Sub: "#{AWS::StackName}-public-eu-west-1a"
+            Fn::Sub: "#{AWS::StackName}-public-#{AWS::Region}a"
         - Key: Network
           Value: Public
   LambdaSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: 'eu-west-1a'
+      AvailabilityZone:
+        Fn::Sub: '#{AWS::Region}a'
       CidrBlock: '10.0.1.0/24'
       VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value:
-            Fn::Sub: "#{AWS::StackName}-lambda-eu-west-1a"
+            Fn::Sub: "#{AWS::StackName}-lambda-#{AWS::Region}a"
         - Key: Network
           Value: Private
   LambdaSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: 'eu-west-1b'
+      AvailabilityZone:
+        Fn::Sub: '#{AWS::Region}b'
       CidrBlock: '10.0.2.0/24'
       VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value:
-            Fn::Sub: "#{AWS::StackName}-lambda-eu-west-1b"
+            Fn::Sub: "#{AWS::StackName}-lambda-#{AWS::Region}b"
         - Key: Network
           Value: Private
   DbSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: 'eu-west-1a'
+      AvailabilityZone:
+        Fn::Sub: '#{AWS::Region}a'
       CidrBlock: '10.0.3.0/24'
       VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value:
-            Fn::Sub: "#{AWS::StackName}-db-eu-west-1a"
+            Fn::Sub: "#{AWS::StackName}-db-#{AWS::Region}a"
         - Key: Network
           Value: Private
   DbSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: 'eu-west-1b'
+      AvailabilityZone:
+        Fn::Sub: '#{AWS::Region}b'
       CidrBlock: '10.0.4.0/24'
       VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value:
-            Fn::Sub: "#{AWS::StackName}-db-eu-west-1b"
+            Fn::Sub: "#{AWS::StackName}-db-#{AWS::Region}b"
         - Key: Network
           Value: Private
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: 'This group contains subnets for RDS instance'
-      DBSubnetGroupName: 'rds-subnet-group'
+      DBSubnetGroupName:
+        Fn::Sub: '#{AWS::StackName}-rds-subnet-group'
       SubnetIds:
         - !Ref DbSubnet1
         - !Ref DbSubnet2
   DHCPOptions:
     Type: 'AWS::EC2::DHCPOptions'
     Properties:
-      DomainName: # "eu-west-1.compute.internal"
+      DomainName:
         Fn::Sub: "#{AWS::Region}.compute.internal"
       DomainNameServers:
         - AmazonProvidedDNS
@@ -344,8 +354,8 @@ Resources:
   DynamodbVPCEndpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
-      ServiceName: # com.amazonaws.eu-west-1.dynamodb
-        Fn::Sub: com.amazonaws.#{AWS::Region}.dynamodb
+      ServiceName:
+        Fn::Sub: 'com.amazonaws.#{AWS::Region}.dynamodb'
       VpcId:
         Ref: VPC
       VpcEndpointType: Gateway

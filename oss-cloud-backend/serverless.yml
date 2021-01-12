@@ -7,10 +7,10 @@ provider:
   stage: ${opt:stage, 'local'}
   vpc:
     securityGroupIds:
-      - ${ssm:/NETWORKING/tst-infrastructure-dev/LambdaSecurityGroup}
+      - ${ssm:/NETWORKING/oss-infrastructure-${self:provider.stage}/LambdaSecurityGroup}
     subnetIds:
-      - !Select [ 0, '${ssm:/NETWORKING/tst-infrastructure-dev/LambdaSubnets~split}' ]
-      - !Select [ 1, '${ssm:/NETWORKING/tst-infrastructure-dev/LambdaSubnets~split}' ]
+      - !Select [ 0, '${ssm:/NETWORKING/oss-infrastructure-${self:provider.stage}/LambdaSubnets~split}' ]
+      - !Select [ 1,  '${ssm:/NETWORKING/oss-infrastructure-${self:provider.stage}/LambdaSubnets~split}' ]
   environment:
     MYSQL_ENDPOINT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-endpoint~true}
     MYSQL_PORT: ${ssm:/oss-cloud/${self:provider.stage}/mysql-port~true}
@@ -29,6 +29,16 @@ plugins:
   - serverless-offline-scheduler
   - serverless-offline-dotenv
   - serverless-offline
+  - serverless-dashboard
+
+custom:
+  serverlessDashboard:
+    lambda:
+      enabled: true
+    apiGateway:
+      enabled: true
+
+
 
 functions:
   addContributor:
