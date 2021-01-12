@@ -93,9 +93,9 @@ vpc:
         - subnetId1
         - subnetId2
 ```
-Since we want to store all lambda function in specific subnet and security group, in this VPC section we'll use these parameters: 
+Since we want to store all lambda functions in specific subnet and security group, in this VPC section we'll use these parameters: 
 
-`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup`
+`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup` <br/>
 `/NETWORKING/oss-infrastructure-prod/LambdaSubnets` .
 
 ## Possible Improvements
