@@ -66,6 +66,38 @@ Your site will be hosted on http://name-of-your-bucket.s3-website-us-west-2.amaz
 
 To make site accessible, bucket policy and bucket cors should be set. Configuration can be find in files `bucket-policy.json` and `bucket-cors-configuration.xml`
 
+### Storing networking SSM parameters
+
+There are several important SSM parameters.
+
+List of all networking parameters are listed bellow:
+
+`/NETWORKING/oss-infrastructure-prod/DBSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/DbSecurityGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/LambdaSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/PublicSubnets` <br/>
+`/NETWORKING/oss-infrastructure-prod/RDSSubnetGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/VPC` <br/>
+
+In order to store all lambda functions inside custom VPC, in the VPC section we need to declare subnets and security group for lambda.
+
+It should look simmilar to this:
+
+```
+vpc:
+      securityGroupIds:
+        - securityGroupId1
+        - securityGroupId2
+      subnetIds:
+        - subnetId1
+        - subnetId2
+```
+Since we want to store all lambda functions in specific subnet and security group, in this VPC section we'll use these parameters: 
+
+`/NETWORKING/oss-infrastructure-prod/LambdaSecurityGroup` <br/>
+`/NETWORKING/oss-infrastructure-prod/LambdaSubnets` .
+
 ## Possible Improvements
 
 - Increase GitHub Api rate limits. Currently there is a limit of 30 requests per minute, which means 29 forked repositories per contributor.
